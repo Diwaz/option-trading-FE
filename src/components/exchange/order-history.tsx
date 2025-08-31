@@ -5,22 +5,27 @@ import { useMemo } from "react"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { useTradeStore } from "@/store/useStore"
+import { Button } from "../ui/button"
 
 type Order = {
-  id: string
-  symbol: string
-  side: "Buy" | "Sell"
-  qty: number
-  price: number
-  tp?: number | null
-  sl?: number | null
-  pnl?: number | null
-  time: string
+  orderId: string
+  asset: string
+  type: "Buy" | "Sell"
+  leverage: number,
+  margin: number,
 }
 
 const fmt = (v: number) => v.toLocaleString(undefined, { maximumFractionDigits: 2 })
 
 export default function OrderHistory() {
+  const openTrades = useTradeStore((state)=>state.openTrades);
+  const removeTrade = useTradeStore((state)=>state.removeTrade);
+
+  const handleCloseOrder = (id: string) => {
+    removeTrade(id);
+  }
+
   const { openOrders, closedOrders } = useMemo(() => {
     const open: Order[] = [
       // {
@@ -73,18 +78,23 @@ export default function OrderHistory() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {openOrders.map((o) => (
-                    <TableRow key={o.id} className="hover:bg-neutral-800/50">
-                      <TableCell className="font-medium">{o.symbol}</TableCell>
-                      <TableCell className={o.side === "Buy" ? "text-emerald-400" : "text-red-400"}>{o.side}</TableCell>
-                      <TableCell className="text-right">{fmt(o.qty)}</TableCell>
-                      <TableCell className="text-right">{fmt(o.price)}</TableCell>
-                      <TableCell className="text-right">{o.tp ? fmt(o.tp) : "-"}</TableCell>
-                      <TableCell className="text-right">{o.sl ? fmt(o.sl) : "-"}</TableCell>
-                      <TableCell>{o.time}</TableCell>
+                  {openTrades.map((o) => (
+                    <TableRow key={o.orderId} className="hover:bg-neutral-800/50">
+                      <TableCell className="font-medium">{o.asset}</TableCell>
+                      <TableCell className={o.type === "buy" ? "text-emerald-400" : "text-red-400"}>{o.type}</TableCell>
+                      <TableCell className="text-right">{fmt(o.leverage)}</TableCell>
+                      <TableCell className="text-right">{fmt(o.margin)}</TableCell>
+                      <TableCell className="text-right">{o.margin ? fmt(o.margin) : "-"}</TableCell>
+                      <TableCell className="text-right">{o.margin ? fmt(o.margin) : "-"}</TableCell>
+                      <TableCell>{o.asset}</TableCell>
+                      <TableCell>
+                        <Button size="sm" variant="ghost" className="text-red-400 hover:bg-red-800/50" onClick={()=>{handleCloseOrder(o.orderId)}}>
+                          x
+                        </Button>
+                      </TableCell>
                     </TableRow>
                   ))}
-                  {openOrders.length === 0 && (
+                  {openTrades.length === 0 && (
                     <TableRow>
                       <TableCell colSpan={7} className="text-center text-neutral-400 py-8">
                         No open positions
@@ -110,7 +120,7 @@ export default function OrderHistory() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {closedOrders.map((o) => (
+                  {/* {closedOrders.map((o) => (
                     <TableRow key={o.id} className="hover:bg-neutral-800/50">
                       <TableCell className="font-medium">{o.symbol}</TableCell>
                       <TableCell className={o.side === "Buy" ? "text-emerald-400" : "text-red-400"}>{o.side}</TableCell>
@@ -121,7 +131,7 @@ export default function OrderHistory() {
                       </TableCell>
                       <TableCell>{o.time}</TableCell>
                     </TableRow>
-                  ))}
+                  ))} */}
                   {closedOrders.length === 0 && (
                     <TableRow>
                       <TableCell colSpan={6} className="text-center text-neutral-400 py-8">

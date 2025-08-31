@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
 import { Badge } from "@/components/ui/badge"
 import type { Ticker } from "@/components/exchange/ticker-list"
-import { useAssetStore } from "@/store/useStore";
+import { useAssetStore, useTradeStore } from "@/store/useStore";
 import useSWR from "swr"
 import { apiFetch,apiRequest } from "@/lib/api-client"
 import { send } from "process"
@@ -21,12 +21,11 @@ const [volume, setVolume] = useState("0.50")
 const [tpOn, setTpOn] = useState(false)
 const [slOn, setSlOn] = useState(false)
 
-const [side, setSide] = useState<"buy" | "sell" | null>(null)
+const [side, setSide] = useState<"buy" | "sell">("buy")
 const leverageStops = [1, 5, 10, 20, 100] as const
 const [leverage, setLeverage] = useState<(typeof leverageStops)[number]>(10)
 const selectedSymbol = useAssetStore((state) => state.selectedSymbol)
-
-
+const addTrade = useTradeStore((state) => state.addTrade)
 
 // const livePrices = useAssetStore((state) => state.livePrices)
 
@@ -49,7 +48,7 @@ const mid = useMemo(() => {
   
   
   const sendOrder = async (): Promise<OrderResponse | null> => {
-    console.log("Sending order:", { symbol: selectedSymbol, margin, leverage, type:side });
+    console.log("Sending order to server:", { symbol: selectedSymbol, margin, leverage, type:side });
     try {
       const res = await apiRequest("/trade", "POST",
       {
@@ -60,14 +59,23 @@ const mid = useMemo(() => {
           },
       )
   
-        const data = (await res.json()) as OrderResponse
+      const data = (await res) as OrderResponse
+      console.log("Received order response:", data);
+        addTrade({
+          orderId: data.orderId,
+          asset: selectedSymbol!,
+          margin,
+          leverage,
+          type: side,
+        })
+        console.log("Order response:", data)
         return data
   
       }
-     catch {
-      // graceful fallback – show em dash when balance cannot be fetched
-      return null
-    }
+catch (err) {
+  console.error("Order request failed:", err)
+  return null
+}
   }
   
   // const openTrade = async () => {
