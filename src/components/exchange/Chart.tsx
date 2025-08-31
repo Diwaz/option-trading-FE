@@ -9,7 +9,9 @@ import {
   type ISeriesApi,
 } from "lightweight-charts";
 
-type Candle = {
+import { useAssetStore } from "@/store/useStore";
+
+export type Candle = {
   time: string;
   open: number;
   high: number;
@@ -28,6 +30,8 @@ export default function Chart({ asset, duration, startTime, endTime }: Props) {
   const ref = useRef<HTMLDivElement | null>(null);
   const seriesRef = useRef<ISeriesApi<"Candlestick"> | null>(null);
   const [chartReady, setChartReady] = useState(false);
+
+  const selectedSymbol = useAssetStore((state) => state.selectedSymbol);
 
   useEffect(() => {
     if (!ref.current) return;
@@ -78,7 +82,7 @@ export default function Chart({ asset, duration, startTime, endTime }: Props) {
       try {
         const token = localStorage.getItem("token"); // adjust key if different
         const res = await fetch(
-          `http://localhost:5000/api/v1/trade?assest=ethusdt&duration=1m&startTime=2025-08-28&endTime=2025-08-30`,
+          `http://localhost:5000/api/v1/trade?assest=${selectedSymbol?.toLowerCase()}usdt&duration=1m&startTime=2025-08-28&endTime=2025-08-30`,
           {
             headers: {
               "Content-Type": "application/json",
@@ -110,7 +114,7 @@ export default function Chart({ asset, duration, startTime, endTime }: Props) {
     }
 
     fetchData();
-  }, [asset, duration, startTime, endTime, chartReady]);
+  }, [asset, duration, startTime, endTime, chartReady, selectedSymbol]);
   return (
     <div className="w-full h-full relative flex align-center">
       <div className="w-full h-full" ref={ref} />

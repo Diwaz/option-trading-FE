@@ -4,6 +4,7 @@ import { useState, useMemo } from "react"
 import TickerList, { type Ticker } from "./ticker-list"
 import ChartPlaceholder from "./Chart"
 import OrderPanel from "./order-panel"
+import { useAssetStore } from "@/store/useStore"
 
 const DEFAULT_TICKERS: Ticker[] = [
   { id: "BTCUSD", name: "Bitcoin", symbol: "BTC", bid: 108730.79, ask: 108752.39, change: -5.76 },
@@ -17,7 +18,8 @@ const DEFAULT_TICKERS: Ticker[] = [
 export default function ExchangeShell() {
   // Default to first instrument
   const [selectedId, setSelectedId] = useState<string>(DEFAULT_TICKERS[0]?.id)
-
+  const selectedSymbol = useAssetStore((state) => state.selectedSymbol);
+  // if(!sele)
   const selected = useMemo(() => DEFAULT_TICKERS.find((t) => t.id === selectedId) ?? DEFAULT_TICKERS[0], [selectedId])
 
   return (

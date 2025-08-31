@@ -5,6 +5,7 @@ import { useEffect, useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { cn } from "@/lib/utils"
+import { useAssetStore } from "@/store/useStore"
 
 export type Ticker = {
   symbol: string
@@ -21,6 +22,8 @@ type Props = {
 export default function TickerList({ selectedId, onSelect }: Props) {
   const [data, setData] = useState<Ticker[]>([])
   // console.log('state Data', data)
+  const setSelectedSymbol = useAssetStore((state) => state.setSelectedSymbol);
+  const updatePrice = useAssetStore((state) => state.updatePrice);
 
   useEffect(() => {
     const ws = new WebSocket("ws://localhost:8080")
@@ -64,8 +67,8 @@ export default function TickerList({ selectedId, onSelect }: Props) {
                       : null
                   : null,
               }
+              updatePrice(symbol, { bid: newBid, ask: newAsk });
             })
-
             return Object.values(merged)
           })
         }
@@ -94,7 +97,13 @@ export default function TickerList({ selectedId, onSelect }: Props) {
                 <li key={t.symbol}>
                   <button
                     type="button"
-                    onClick={() => onSelect?.(t.symbol)}
+
+                    onClick={() => {
+
+                      setSelectedSymbol(t.symbol)
+                    }
+
+                    }
                     aria-pressed={selected}
                     aria-current={selected ? "true" : undefined}
                     data-selected={selected}
@@ -139,6 +148,6 @@ export default function TickerList({ selectedId, onSelect }: Props) {
           </ul>
         </ScrollArea>
       </CardContent>
-    </Card>
+    </Card >
   )
 }
