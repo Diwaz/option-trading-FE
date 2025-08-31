@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { useTradeStore } from "@/store/useStore"
 import { Button } from "../ui/button"
+import { apiRequest } from "@/lib/api-client"
 
 type Order = {
   orderId: string
@@ -21,8 +22,48 @@ const fmt = (v: number) => v.toLocaleString(undefined, { maximumFractionDigits: 
 export default function OrderHistory() {
   const openTrades = useTradeStore((state)=>state.openTrades);
   const removeTrade = useTradeStore((state)=>state.removeTrade);
-
-  const handleCloseOrder = (id: string) => {
+ 
+//   const sendOrder = async (): Promise<OrderResponse | null> => {
+//     console.log("Sending order to server:", { symbol: selectedSymbol, margin, leverage, type:side });
+//     try {
+//       const res = await apiRequest("/trade", "POST",
+//       {
+//             asset: selectedSymbol,
+//             margin,
+//             leverage,
+//             type:side,
+//           },
+//       )
+  
+//       const data = (await res) as OrderResponse
+//       console.log("Received order response:", data);
+//         addTrade({
+//           orderId: data.orderId,
+//           asset: selectedSymbol!,
+//           margin,
+//           leverage,
+//           type: side,
+//         })
+//         console.log("Order response:", data)
+//         return data
+  
+//       }
+// catch (err) {
+//   console.error("Order request failed:", err)
+//   return null
+// }
+//   }
+  
+  const handleCloseOrder = async (id: string) => {
+    try {
+        const res = await apiRequest('/trade/close','POST',{
+            orderId: id
+        })
+        console.log("Close order response:", res);
+        
+    } catch (err) {
+      console.error("Close order failed:", err)
+    }
     removeTrade(id);
   }
 
