@@ -5,7 +5,7 @@ import { useMemo, useState } from "react"
 import TickerList, { type Ticker } from "@/components/exchange/ticker-list"
 import ChartPlaceholder from "@/components/exchange/Chart"
 import OrderPanel from "@/components/exchange/order-panel"
-
+import OrderHistory from "@/components/exchange/order-history"
 const TICKERS: Ticker[] = [
   { symbol: "BTCUSD", name: "Bitcoin", bid: 108730.79, ask: 108752.39, changePct: -5.76 },
   { symbol: "ETHUSD", name: "Ethereum", bid: 3850.1, ask: 3851.2, changePct: 2.1 },
@@ -37,6 +37,9 @@ export default function Page() {
         <section aria-label="Order panel" className="rounded-lg border bg-card text-card-foreground">
           <OrderPanel ticker={selected} />
         </section>
+        <div className="min-h-0 w-full md:col-start-2">
+          <OrderHistory />
+        </div>
       </div>
     </main>
   )

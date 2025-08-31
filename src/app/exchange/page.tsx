@@ -2,6 +2,7 @@
 import TickerList from "@/components/exchange/ticker-list"
 import OrderPanel from "@/components/exchange/order-panel"
 import ChartPlaceholder from "@/components/exchange/Chart"
+import OrderHistory from "@/components/exchange/order-history"
 
 export default function Page() {
   return (
@@ -13,16 +14,19 @@ export default function Page() {
 
       <section className="grid flex-1 grid-cols-1 gap-4 p-4 md:grid-cols-[260px_1fr_320px]">
         <aside className="min-h-0">
-          <TickerList />
+          {/* <TickerList /> */}
         </aside>
 
         <section className="min-h-0">
-          <ChartPlaceholder />
+          {/* <ChartPlaceholder /> */}
         </section>
 
         <aside className="min-h-0">
           <OrderPanel />
         </aside>
+        <div className="min-h-0 md:row-start-2 md:col-start-2">
+          <OrderHistory />
+        </div>
       </section>
     </main>
   )
