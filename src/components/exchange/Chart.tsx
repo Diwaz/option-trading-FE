@@ -80,13 +80,21 @@ export default function Chart({ asset, duration, startTime, endTime }: Props) {
 
     async function fetchData() {
       try {
-        const token = localStorage.getItem("token"); // adjust key if different
+        const token = localStorage.getItem("auth_token"); // adjust key if different
+        // const todayDate = new Date().toISOString().split("T")[0];
+          const today = new Date();
+          const tomorrow = new Date(today);
+          tomorrow.setDate(today.getDate() + 1);
+
+          const formatDate = (date) => date.toISOString().split("T")[0];
+          const todayDate = formatDate(tomorrow); // e.g. "2025-08-31"
+
         const res = await fetch(
-          `http://localhost:5000/api/v1/trade?assest=${selectedSymbol?.toLowerCase()}usdt&duration=1m&startTime=2025-08-28&endTime=2025-08-30`,
+          `http://localhost:5000/api/v1/candles?assest=${selectedSymbol?.toLowerCase()}usdt&duration=1m&startTime=2025-08-28&endTime=${todayDate}`,
           {
             headers: {
               "Content-Type": "application/json",
-              Authorization: token ? `Bearer ${token}` : "",
+              Authorization: `Bearer ${token}` ,
             },
           }
         );

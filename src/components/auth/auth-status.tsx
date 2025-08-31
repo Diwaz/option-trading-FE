@@ -23,7 +23,7 @@ export default function AuthStatus() {
 
   return (
     <>
-      <div className="fixed top-4 right-4 z-50">
+      <div className=" ">
         {loggedIn ? (
           <div className="inline-flex items-center gap-2 rounded-md bg-emerald-900/40 border border-emerald-700 px-2.5 py-1.5 text-emerald-200">
             <CheckCircle2 className="size-5" aria-label="Logged in" />

@@ -6,6 +6,8 @@ import type { Metadata } from "next"
 import { Suspense } from "react"
 import "./globals.css"
 import AuthStatus from "@/components/auth/auth-status"
+import Navbar from "@/components/navbar/nav"
+
 
 export const metadata: Metadata = {
   title: "v0 App",
@@ -21,7 +23,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <body>
-        <AuthStatus />
+        <Navbar />
         <Suspense fallback={null}>{children}</Suspense>
 
       </body>

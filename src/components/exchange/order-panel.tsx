@@ -9,37 +9,96 @@ import { Switch } from "@/components/ui/switch"
 import { Badge } from "@/components/ui/badge"
 import type { Ticker } from "@/components/exchange/ticker-list"
 import { useAssetStore } from "@/store/useStore";
+import useSWR from "swr"
+import { apiFetch,apiRequest } from "@/lib/api-client"
+import { send } from "process"
+
+type OrderResponse ={
+  orderId: string
+}  
 export default function OrderPanel() {
-  const [volume, setVolume] = useState("0.50")
-  const [tpOn, setTpOn] = useState(false)
-  const [slOn, setSlOn] = useState(false)
+const [volume, setVolume] = useState("0.50")
+const [tpOn, setTpOn] = useState(false)
+const [slOn, setSlOn] = useState(false)
 
-  const [side, setSide] = useState<"buy" | "sell" | null>(null)
-  const leverageStops = [1, 5, 10, 20, 100] as const
-  const [leverage, setLeverage] = useState<(typeof leverageStops)[number]>(10)
-  const selectedSymbol = useAssetStore((state) => state.selectedSymbol)
-
- 
-
-  // const livePrices = useAssetStore((state) => state.livePrices)
+const [side, setSide] = useState<"buy" | "sell" | null>(null)
+const leverageStops = [1, 5, 10, 20, 100] as const
+const [leverage, setLeverage] = useState<(typeof leverageStops)[number]>(10)
+const selectedSymbol = useAssetStore((state) => state.selectedSymbol)
 
 
-  const price = useAssetStore((state) =>  selectedSymbol ? state.livePrices[selectedSymbol] : null);
-  const bid = Number(price?.bid?.toFixed(2) ?? NaN)
-  const ask = Number(price?.ask?.toFixed(2) ?? NaN)
-  const mid = useMemo(() => {
+
+// const livePrices = useAssetStore((state) => state.livePrices)
+
+
+const price = useAssetStore((state) =>  selectedSymbol ? state.livePrices[selectedSymbol] : null);
+const bid = Number(price?.bid?.toFixed(2) ?? NaN)
+const ask = Number(price?.ask?.toFixed(2) ?? NaN)
+const mid = useMemo(() => {
     const b = Number.isFinite(bid) ? bid : Number.NaN
     const a = Number.isFinite(ask) ? ask : Number.NaN
     return Number.isFinite(b) && Number.isFinite(a) ? (b + a) / 2 : Number.NaN
-  }, [bid, ask])
+  }, [bid, ask])  
 
   const lots = Number(volume) || 0
   const contractSize = 100 // demo contract size for UI math
   const notional = Number.isFinite(mid) ? mid * lots * contractSize : 0
   const feeRate = 0.001 // 0.10% example
   const fees = notional * feeRate
-  const margin = leverage > 0 ? notional / leverage : 0
+  const margin = leverage > 0 ? notional / leverage : 0  
+  
+  
+  const sendOrder = async (): Promise<OrderResponse | null> => {
+    console.log("Sending order:", { symbol: selectedSymbol, margin, leverage, type:side });
+    try {
+      const res = await apiRequest("/trade", "POST",
+      {
+            asset: selectedSymbol,
+            margin,
+            leverage,
+            type:side,
+          },
+      )
+  
+        const data = (await res.json()) as OrderResponse
+        return data
+  
+      }
+     catch {
+      // graceful fallback – show em dash when balance cannot be fetched
+      return null
+    }
+  }
+  
+  // const openTrade = async () => {
+    // if (!selectedSymbol || !side) return
+    
+    // try {
+      //   const res = await fetch("http://localhost:5000/api/v1/trade/", {
+        //     method: "POST",
+        //     headers: { "Content-Type": "application/json" ,
+        //     Authorization: `Bearer ${token}` ,
+        //     },
+        //     body: JSON.stringify({
+          //       symbol: selectedSymbol,
+          //       margin,
+          //       leverage,
+          //       side,
+          //     }),
+          //   })
+          
+      //   if (!res.ok) {
+    //     throw new Error(`Server error: ${res.status}`)
+    //   }
 
+    //   const data = await res.json()
+    //   console.log("Trade opened:", data)
+    //   alert("Trade opened successfully!")
+    // } catch (err) {
+    //   console.error("Error opening trade:", err)
+    //   alert("Failed to open trade. Check console for details.")
+    // }
+  // }
   const confirmLabel =
     side === "buy"
       ? `Confirm Buy ${Number.isFinite(lots) ? volume : ""} lots`
@@ -177,9 +236,7 @@ export default function OrderPanel() {
                   className={`w-full h-10 ${confirmClasses}`}
                   disabled={!side || !Number.isFinite(notional) || lots <= 0}
                   // onClick placeholder - wire to your submit action
-                  onClick={() => {
-                    // Submit logic goes here (intentionally left as UI only)
-                  }}
+                  onClick={sendOrder}
                 >
                   {confirmLabel}
                 </Button>
@@ -240,7 +297,7 @@ export default function OrderPanel() {
                   Select Buy
                 </Button>
               </div>
-              <Button type="button" className={`w-full h-10 ${confirmClasses}`} disabled={!side}>
+              <Button type="button" className={`w-full h-10 ${confirmClasses}`} disabled={!side} onClick={sendOrder}>
                 {confirmLabel}
               </Button>
             </div>
