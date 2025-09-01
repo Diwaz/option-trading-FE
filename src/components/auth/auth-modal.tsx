@@ -127,10 +127,6 @@ export default function AuthModal({ open, onOpenChange, baseUrl = "http://localh
           </TabsContent>
         </Tabs>
 
-        <p className="text-xs text-zinc-400">
-          Posting to {`${baseUrl}/api/v1/signin`} and {`${baseUrl}/api/v1/signup`}. Adjust baseUrl in AuthModal if
-          needed.
-        </p>
       </DialogContent>
     </Dialog>
   )

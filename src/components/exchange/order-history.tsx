@@ -5,7 +5,8 @@ import { useMemo } from "react"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { useTradeStore } from "@/store/useStore"
+import { useAssetStore, useTradeStore } from "@/store/useStore"
+
 import { Button } from "../ui/button"
 import { apiRequest } from "@/lib/api-client"
 
@@ -22,6 +23,10 @@ const fmt = (v: number) => v.toLocaleString(undefined, { maximumFractionDigits: 
 export default function OrderHistory() {
   const openTrades = useTradeStore((state)=>state.openTrades);
   const removeTrade = useTradeStore((state)=>state.removeTrade);
+  const closedOrders = [];
+  // const selectedSymbol = useAssetStore((state) => state.selectedSymbol);
+  // const livePrice = useAssetStore((state) => selectedSymbol ?  state.livePrices[selectedSymbol] : null);
+  
  
 //   const sendOrder = async (): Promise<OrderResponse | null> => {
 //     console.log("Sending order to server:", { symbol: selectedSymbol, margin, leverage, type:side });
@@ -66,28 +71,6 @@ export default function OrderHistory() {
     }
     removeTrade(id);
   }
-
-  const { openOrders, closedOrders } = useMemo(() => {
-    const open: Order[] = [
-      // {
-      //   id: "o-1",
-      //   symbol: "BTCUSD",
-      //   side: "Buy",
-      //   qty: 0.5,
-      //   price: 108734.12,
-      //   tp: 120000,
-      //   sl: 102000,
-      //   time: "23:14:03",
-      // },
-      // { id: "o-2", symbol: "AAPL", side: "Sell", qty: 20, price: 232.44, tp: 220, sl: 238, time: "22:02:10" },
-    ]
-    const closed: Order[] = [
-      // { id: "c-1", symbol: "EURUSD", side: "Sell", qty: 1000, price: 1.1685, pnl: 42.3, time: "18:30:51" },
-      // { id: "c-2", symbol: "XAUUSD", side: "Buy", qty: 2, price: 2403.5, pnl: -18.5, time: "11:07:22" },
-    ]
-    return { openOrders: open, closedOrders: closed }
-  }, [])
-
   return (
     <Card className="h-full bg-neutral-900 text-neutral-200 w-full">
       <CardHeader className="py-3 border-b border-neutral-800">
@@ -115,7 +98,7 @@ export default function OrderHistory() {
                     <TableHead className="w-[120px] text-right">Price</TableHead>
                     <TableHead className="w-[120px] text-right">TP</TableHead>
                     <TableHead className="w-[120px] text-right">SL</TableHead>
-                    <TableHead className="w-[100px]">Time</TableHead>
+                    <TableHead className="w-[100px]">PnL</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -127,7 +110,7 @@ export default function OrderHistory() {
                       <TableCell className="text-right">{fmt(o.margin)}</TableCell>
                       <TableCell className="text-right">{o.margin ? fmt(o.margin) : "-"}</TableCell>
                       <TableCell className="text-right">{o.margin ? fmt(o.margin) : "-"}</TableCell>
-                      <TableCell>{o.asset}</TableCell>
+                      <TableCell>(livePrice)</TableCell>
                       <TableCell>
                         <Button size="sm" variant="ghost" className="text-red-400 hover:bg-red-800/50" onClick={()=>{handleCloseOrder(o.orderId)}}>
                           x

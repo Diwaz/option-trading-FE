@@ -29,7 +29,7 @@ const fetchBalance = async (): Promise<BalanceResponse | null> => {
 
 export default function Navbar() {
   const { data, isLoading, mutate } = useSWR<BalanceResponse | null>("balance", fetchBalance, {
-    refreshInterval: 30000,
+    refreshInterval: 3000,
     revalidateOnFocus: false,
   })
 

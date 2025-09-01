@@ -11,7 +11,6 @@ import type { Ticker } from "@/components/exchange/ticker-list"
 import { useAssetStore, useTradeStore } from "@/store/useStore";
 import useSWR from "swr"
 import { apiFetch,apiRequest } from "@/lib/api-client"
-import { send } from "process"
 
 type OrderResponse ={
   orderId: string
@@ -41,9 +40,9 @@ const mid = useMemo(() => {
 
   const lots = Number(volume) || 0
   const contractSize = 100 // demo contract size for UI math
-  const notional = Number.isFinite(mid) ? mid * lots * contractSize : 0
-  const feeRate = 0.001 // 0.10% example
-  const fees = notional * feeRate
+  const notional = Number.isFinite(mid) ? mid * lots: 0
+  const feeRate = 0.01 // 0.10% example
+  const fees = notional*feeRate;
   const margin = leverage > 0 ? notional / leverage : 0  
   
   
@@ -53,7 +52,7 @@ const mid = useMemo(() => {
       const res = await apiRequest("/trade", "POST",
       {
             asset: selectedSymbol,
-            margin,
+            margin:Math.trunc(margin*1e2),
             leverage,
             type:side,
           },

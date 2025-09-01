@@ -31,6 +31,7 @@ export default function TickerList({ selectedId, onSelect }: Props) {
     ws.onmessage = (event) => {
       try {
         const parsed = JSON.parse(event.data)
+        console.log("parsed data", parsed)
 
         if (parsed.price_updates) {
           setData((prev) => {
@@ -42,6 +43,7 @@ export default function TickerList({ selectedId, onSelect }: Props) {
             })
 
             parsed.price_updates.forEach((u: any) => {
+              console.log("update", u)
               const symbol = u.symbol.toUpperCase()
               const newBid = u.buyPrice / Math.pow(10, u.decimals)
               const newAsk = u.sellPrice / Math.pow(10, u.decimals)
