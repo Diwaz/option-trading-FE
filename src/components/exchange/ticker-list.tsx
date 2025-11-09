@@ -8,8 +8,8 @@ import { cn } from "@/lib/utils"
 import { useAssetStore } from "@/store/useStore"
 
 export type Ticker = {
-  symbol: string
-  bid: number
+  asset: string
+  buy: number
   ask: number
   bidChange?: "up" | "down" | null
   askChange?: "up" | "down" | null
@@ -39,25 +39,25 @@ export default function TickerList({ selectedId, onSelect }: Props) {
 
             // keep old values
             prev.forEach((t) => {
-              merged[t.symbol] = t
+              merged[t.asset] = t
             })
 
             parsed.price_updates.forEach((u: any) => {
               console.log("update", u)
-              const symbol = u.symbol.toUpperCase()
-              const newBid = u.buyPrice / Math.pow(10, u.decimals)
-              const newAsk = u.sellPrice / Math.pow(10, u.decimals)
+              const asset = u.asset.toUpperCase()
+              const newBid = u.buy 
+              const newAsk = u.ask 
 
-              const old = merged[symbol]
+              const old = merged[asset]
 
-              merged[symbol] = {
-                symbol,
-                bid: newBid,
+              merged[asset] = {
+                asset,
+                buy: newBid,
                 ask: newAsk,
                 bidChange: old
-                  ? newBid > old.bid
+                  ? newBid > old.buy
                     ? "up"
-                    : newBid < old.bid
+                    : newBid < old.buy
                       ? "down"
                       : null
                   : null,
@@ -69,7 +69,7 @@ export default function TickerList({ selectedId, onSelect }: Props) {
                       : null
                   : null,
               }
-              updatePrice(symbol, { bid: newBid, ask: newAsk });
+              updatePrice(asset, { bid: newBid, ask: newAsk });
             })
             return Object.values(merged)
           })
@@ -94,15 +94,15 @@ export default function TickerList({ selectedId, onSelect }: Props) {
         <ScrollArea className="min-h-0 flex-1 overflow-x-hidden pr-1">
           <ul className="divide-y divide-border/60">
             {data.map((t) => {
-              const selected = t.symbol === selectedId
+              const selected = t.asset === selectedId
               return (
-                <li key={t.symbol}>
+                <li key={t.asset}>
                   <button
                     type="button"
 
                     onClick={() => {
 
-                      setSelectedSymbol(t.symbol)
+                      setSelectedSymbol(t.asset)
                     }
 
                     }
@@ -117,7 +117,7 @@ export default function TickerList({ selectedId, onSelect }: Props) {
                   >
                     {/* Symbol */}
                     <span className="min-w-0 truncate text-sm font-medium tracking-wide text-foreground">
-                      {t.symbol}
+                      {t.asset}
                     </span>
 
                     {/* Bid */}
@@ -129,7 +129,7 @@ export default function TickerList({ selectedId, onSelect }: Props) {
                         !t.bidChange && "text-muted-foreground"
                       )}
                     >
-                      {t.bid.toFixed(2)}
+                      {t.buy.toFixed(2)}
                     </span>
 
                     {/* Ask */}
