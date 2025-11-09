@@ -42,7 +42,7 @@ export default function TickerList({ selectedId, onSelect }: Props) {
               merged[t.asset] = t
             })
 
-            parsed.price_updates.forEach((u: any) => {
+            parsed.price_updates.forEach((u: Ticker) => {
               console.log("update", u)
               const asset = u.asset.toUpperCase()
               const newBid = u.buy 

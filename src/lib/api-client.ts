@@ -20,7 +20,7 @@ export async function apiFetch(input: RequestInfo | URL, init?: RequestInit) {
   return resp
 }
 // api-client.ts
-const API_BASE_URL = "http://localhost:5555/api/v1"
+const API_BASE_URL = "http://localhost:8848/api/v1"
 
 type HttpMethod = "GET" | "POST" | "PUT" | "DELETE"
 

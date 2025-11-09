@@ -4,15 +4,14 @@
 import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { CheckCircle2, LogOut } from "lucide-react"
-import AuthModal from "./auth-modal"
 import { clearToken, getToken, onAuthChange } from "@/lib/auth"
-
+import { useRouter } from "next/navigation"
 // Shows a "logged in" logo when authenticated and a "logout" logo when not logged in.
 // Clicking when logged out opens the popup form.
 export default function AuthStatus() {
   const [open, setOpen] = useState(false)
   const [token, setToken] = useState<string | null>(null)
-
+  const router = useRouter();
   useEffect(() => {
     setToken(getToken())
     const off = onAuthChange(() => setToken(getToken()))
@@ -40,16 +39,17 @@ export default function AuthStatus() {
           <Button
             variant="secondary"
             className="bg-zinc-800 hover:bg-zinc-700 border border-zinc-700"
-            onClick={() => setOpen(true)}
+            onClick={() => {
+              router.push('/auth/login')
+            }}
             aria-label="Open authentication"
             title="Open authentication"
           >
             <LogOut className="mr-2 size-4" />
-            Login / Signup
+            Login 
           </Button>
         )}
       </div>
-      <AuthModal open={open} onOpenChange={setOpen} />
     </>
   )
 }

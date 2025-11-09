@@ -4,38 +4,28 @@ import type { Metadata } from "next"
 // import { GeistMono } from "geist/font/mono"
 // import { Analytics } from "@vercel/analytics/next"
 import { Suspense } from "react"
-import "./globals.css"
-import AuthStatus from "@/components/auth/auth-status"
-import Navbar from "@/components/navbar/nav"
+import "../../globals.css"
 import { Toaster } from "sonner";
-import { headers } from "next/headers"
 
 
 export const metadata: Metadata = {
-  title: "100xTrade",
-  description: "Trade with infinite Leverage",
+  title: "Login",
+  description: "100x Trade",
   generator: "100xTrade.xyz",
 }
 
- const headersList = await headers()
-  const pathname = headersList.get('x-pathname')
-  console.log("pathname",pathname)
-
-const hideNavbar = pathname?.startsWith("/auth")
-export default function RootLayout({
+export default function AuthLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
-
   return (
     <html lang="en" className="dark">
       <body>
-        {!hideNavbar && <Navbar/>}
-        <Toaster/>
         <Suspense fallback={null}>{children}</Suspense>
 
       </body>
     </html>
   )
 }
+
