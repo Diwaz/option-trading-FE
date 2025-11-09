@@ -24,10 +24,10 @@ const API_BASE_URL = "http://localhost:8848/api/v1"
 
 type HttpMethod = "GET" | "POST" | "PUT" | "DELETE"
 
-export async function apiRequest<T = any>(
+export async function apiRequest<T>(
   endpoint: string,
   method: HttpMethod ,
-  body?: Record<string, any>
+  body?: Record<string, string>
 ): Promise<T> {
   try {
     // 👇 Load auth token from localStorage

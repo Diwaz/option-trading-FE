@@ -125,7 +125,7 @@ export function Email({
                     </Button>
                     <Link href="/" className="w-full">
                       <Button variant="secondary" size="lg" className="w-full">
-                        Back to chat
+                        Back to Home
                       </Button>
                     </Link>
                   </div>

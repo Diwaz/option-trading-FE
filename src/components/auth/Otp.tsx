@@ -23,6 +23,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import Link from "next/link";
 import { setToken } from "@/lib/auth";
+import { apiRequest } from "@/lib/api-client";
 
 export function Otp({
   email,
@@ -122,7 +123,15 @@ const BACKEND_URL = 'http://localhost:8848/api/v1'
       if (response.status === 200) {
         setToken(data.token);
         // localStorage.setItem("token", data.token);
-        window.location.href = "/";
+        try {
+            await apiRequest('/trade/onRamp',"POST",{
+                email,
+            })
+        }catch(e){
+            setLoading(false);
+            toast("An error occured while initializing account,Please Contact Team");
+        }
+       window.location.href = "/";
       } else {
         setLoading(false);
         toast(data.message || "Verification failed");

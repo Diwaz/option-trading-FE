@@ -90,7 +90,7 @@ export default function Chart({ asset, duration, startTime, endTime }: Props) {
           const todayDate = formatDate(tomorrow); // e.g. "2025-08-31"
 
         const res = await fetch(
-          `http://localhost:5000/api/v1/candles?assest=${selectedSymbol?.toLowerCase()}usdt&duration=1m&startTime=2025-08-28&endTime=${todayDate}`,
+          `http://localhost:8848/api/v1/candles?assest=${selectedSymbol?.toLowerCase()}usdt&duration=1m&startTime=2025-08-28&endTime=${todayDate}`,
           {
             headers: {
               "Content-Type": "application/json",

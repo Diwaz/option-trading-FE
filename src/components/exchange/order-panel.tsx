@@ -49,7 +49,7 @@ const mid = useMemo(() => {
   const sendOrder = async (): Promise<OrderResponse | null> => {
     console.log("Sending order to server:", { symbol: selectedSymbol, margin, leverage, type:side });
     try {
-      const res = await apiRequest("/trade", "POST",
+      const res = await apiRequest("/trade/create", "POST",
       {
             asset: selectedSymbol,
             margin:Math.trunc(margin*1e2),

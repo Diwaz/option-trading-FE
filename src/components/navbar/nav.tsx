@@ -9,14 +9,15 @@ import AuthStatus from "../auth/auth-status"
 
 type BalanceResponse = {
   usd_balance?: number
+  message:string
   // allow any other fields from your backend without breaking the UI
 //   [key: string]: unknown
 }
 
 const fetchBalance = async (): Promise<BalanceResponse | null> => {
   try {
-    const res = await apiFetch("http://localhost:5000/api/v1/balance", {
-      method: "GET",
+    const res = await apiFetch("http://localhost:8848/api/v1/trade/balance", {
+      method: "POST",
       headers: { "Content-Type": "application/json" },
     })
     const data = (await res.json()) as BalanceResponse
@@ -39,14 +40,15 @@ export default function Navbar() {
   }, [])
 
   const formattedBalance = useMemo(() => {
-    const val = typeof data?.usd_balance === "number" ? data.usd_balance : undefined
+    const val = typeof data?.message === "string" ? parseInt(data.message) : undefined
+    console.log("val re val",val)
     if (val == null || Number.isNaN(val)) return "—"
     try {
       return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(val)
     } catch {
       return `${val.toFixed(2)} USD`
     }
-  }, [data?.usd_balance])
+  }, [data?.message])
 
   const handleLogout = useCallback(() => {
     localStorage.removeItem("auth_token")
