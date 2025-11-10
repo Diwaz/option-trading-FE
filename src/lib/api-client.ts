@@ -43,11 +43,14 @@ export async function apiRequest<T>(
     })
 
     if (!res.ok) {
-      throw new Error(`HTTP error ${res.status}`)
+      const error = await res.json();
+      console.log("this error popped up",error.message)
+      throw new Error(error.message)
     }
 
     return (await res.json()) as T
   } catch (err) {
+    console.log("we reached here",err)
     console.error("API request failed:", err)
     throw err
   }

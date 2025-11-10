@@ -9,6 +9,7 @@ import { useAssetStore, useTradeStore } from "@/store/useStore"
 
 import { Button } from "../ui/button"
 import { apiRequest } from "@/lib/api-client"
+import { toast } from "sonner"
 
 type Order = {
   orderId: string
@@ -24,52 +25,20 @@ export default function OrderHistory() {
   const openTrades = useTradeStore((state)=>state.openTrades);
   const removeTrade = useTradeStore((state)=>state.removeTrade);
   const closedOrders = [];
-  // const selectedSymbol = useAssetStore((state) => state.selectedSymbol);
-  // const livePrice = useAssetStore((state) => selectedSymbol ?  state.livePrices[selectedSymbol] : null);
-  
- 
-//   const sendOrder = async (): Promise<OrderResponse | null> => {
-//     console.log("Sending order to server:", { symbol: selectedSymbol, margin, leverage, type:side });
-//     try {
-//       const res = await apiRequest("/trade", "POST",
-//       {
-//             asset: selectedSymbol,
-//             margin,
-//             leverage,
-//             type:side,
-//           },
-//       )
-  
-//       const data = (await res) as OrderResponse
-//       console.log("Received order response:", data);
-//         addTrade({
-//           orderId: data.orderId,
-//           asset: selectedSymbol!,
-//           margin,
-//           leverage,
-//           type: side,
-//         })
-//         console.log("Order response:", data)
-//         return data
-  
-//       }
-// catch (err) {
-//   console.error("Order request failed:", err)
-//   return null
-// }
-//   }
-  
+
   const handleCloseOrder = async (id: string) => {
     try {
         const res = await apiRequest('/trade/close','POST',{
             orderId: id
         })
         console.log("Close order response:", res);
+        toast("Order Closed Successfully")
         
+        removeTrade(id);
     } catch (err) {
       console.error("Close order failed:", err)
+      toast("Error while closing order")
     }
-    removeTrade(id);
   }
   return (
     <Card className="h-full bg-neutral-900 text-neutral-200 w-full">

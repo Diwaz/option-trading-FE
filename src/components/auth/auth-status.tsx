@@ -9,7 +9,6 @@ import { useRouter } from "next/navigation"
 // Shows a "logged in" logo when authenticated and a "logout" logo when not logged in.
 // Clicking when logged out opens the popup form.
 export default function AuthStatus() {
-  const [open, setOpen] = useState(false)
   const [token, setToken] = useState<string | null>(null)
   const router = useRouter();
   useEffect(() => {

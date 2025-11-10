@@ -25,7 +25,7 @@ type OrderState = {
 }
 
 export const useAssetStore = create<AssetState>((set) => ({
-  selectedSymbol: null,
+  selectedSymbol: "SOL_USDC",
   livePrices: {},
   setSelectedSymbol: (symbol) => set({ selectedSymbol: symbol }),
   updatePrice: (symbol, price) =>

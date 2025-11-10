@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useMemo, useState } from "react"
@@ -6,7 +5,32 @@ import TickerList, { type Ticker } from "@/components/exchange/ticker-list"
 import Chart from "@/components/exchange/Chart"
 import OrderPanel from "@/components/exchange/order-panel"
 import OrderHistory from "@/components/exchange/order-history"
+
+const timeIntervals = [
+  { label: "1m", value: "1m" },
+  { label: "3m", value: "3m" },
+  { label: "5m", value: "5m" },
+  { label: "30m", value: "30m" },
+  { label: "1h", value: "1h" },
+] as const;
+
+const timeRanges = [
+  { label: "1H", value: 60 * 60 * 1000 },
+  { label: "1D", value: 24 * 60 * 60 * 1000 },
+  { label: "7D", value: 7 * 24 * 60 * 60 * 1000 },
+] as const;
+
+type TimeInterval = typeof timeIntervals[number]["value"];
+type TimeRange = typeof timeRanges[number]["value"];
+
 export default function Page() {
+  const [selectedInterval, setSelectedInterval] = useState<TimeInterval>("5m");
+  const [selectedRange, setSelectedRange] = useState<TimeRange>(timeRanges[0].value);
+
+  const startTime = useMemo(() => {
+    const now = new Date().getTime();
+    return Math.floor((now - selectedRange) / 1000);
+  }, [selectedRange]);
 
   return (
     <main className="mx-auto w-full max-w-[1440px] p-4">
@@ -15,12 +39,48 @@ export default function Page() {
           <TickerList />
         </section>
 
-        {/* Center: Chart placeholder (you will replace this) */}
         <section aria-label="Chart" className="rounded-lg border bg-card text-card-foreground">
-          <Chart />
+          <div className="p-2 border-b">
+            <div className="flex justify-between">
+              <div className="flex gap-1">
+                {timeIntervals.map((interval) => (
+                  <button
+                    key={interval.value}
+                    onClick={() => setSelectedInterval(interval.value)}
+                    className={`
+                      px-3 py-1 rounded text-sm font-medium transition-colors
+                      ${selectedInterval === interval.value
+                        ? 'bg-primary text-primary-foreground'
+                        : 'bg-secondary hover:bg-secondary/80 text-secondary-foreground'
+                      }
+                    `}
+                  >
+                    {interval.label}
+                  </button>
+                ))}
+              </div>
+              <div className="flex gap-1">
+                {timeRanges.map((range) => (
+                  <button
+                    key={range.value}
+                    onClick={() => setSelectedRange(range.value)}
+                    className={`
+                      px-3 py-1 rounded text-sm font-medium transition-colors
+                      ${selectedRange === range.value
+                        ? 'bg-primary text-primary-foreground'
+                        : 'bg-secondary hover:bg-secondary/80 text-secondary-foreground'
+                      }
+                    `}
+                  >
+                    {range.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+          <Chart duration={selectedInterval} startTime={startTime} />
         </section>
 
-        {/* Right: Order panel bound to selection */}
         <section aria-label="Order panel" className="rounded-lg border bg-card text-card-foreground">
           <OrderPanel />
         </section>

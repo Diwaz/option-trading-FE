@@ -1,7 +1,6 @@
-
-
 "use client";
 
+import { toast } from "sonner";
 import { useEffect, useRef, useState } from "react";
 import {
   CandlestickSeries,
@@ -20,16 +19,15 @@ export type Candle = {
 };
 
 type Props = {
-  asset: string;
   duration: string;
-  startTime: string;
-  endTime: string;
+  startTime: number;
 };
 
-export default function Chart({ asset, duration, startTime, endTime }: Props) {
+export default function Chart({ duration, startTime }: Props) {
   const ref = useRef<HTMLDivElement | null>(null);
   const seriesRef = useRef<ISeriesApi<"Candlestick"> | null>(null);
   const [chartReady, setChartReady] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const selectedSymbol = useAssetStore((state) => state.selectedSymbol);
 
@@ -76,56 +74,121 @@ export default function Chart({ asset, duration, startTime, endTime }: Props) {
   }, []);
 
   useEffect(() => {
+    if (!chartReady || !selectedSymbol) return;
+
+    const ws = new WebSocket("wss://ws.backpack.exchange");
+
+    ws.onopen = () => {
+      ws.send(
+        JSON.stringify({
+          method: "SUBSCRIBE",
+          params: [`klines.${duration}.${selectedSymbol}`],
+        })
+      );
+    };
+
+    ws.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+
+      // if (data.topic?.startsWith("klines")) {
+        const kline = data.data;
+          console.log("kline data",kline)
+        const newCandle = {
+          time: Math.floor(new Date(kline.t).getTime() / 1000),
+          open: parseFloat(kline.o),
+          high: parseFloat(kline.h),
+          low: parseFloat(kline.l),
+          close: parseFloat(kline.c),
+        };
+
+        seriesRef.current?.update(newCandle);
+      // }
+    };
+
+    ws.onerror = (error) => {
+      console.error("WebSocket error:", error);
+    };
+
+    return () => {
+      if (ws.readyState === WebSocket.OPEN) {
+        ws.send(
+          JSON.stringify({
+            method: "UNSUBSCRIBE",
+            params: [`klines.${duration}.${selectedSymbol}`],
+          })
+        );
+      }
+      ws.close();
+    };
+  }, [duration, selectedSymbol, chartReady]);
+
+  useEffect(() => {
     if (!chartReady) return;
 
     async function fetchData() {
+      setIsLoading(true);
       try {
-        const token = localStorage.getItem("auth_token"); // adjust key if different
-        // const todayDate = new Date().toISOString().split("T")[0];
-          const today = new Date();
-          const tomorrow = new Date(today);
-          tomorrow.setDate(today.getDate() + 1);
-
-          const formatDate = (date) => date.toISOString().split("T")[0];
-          const todayDate = formatDate(tomorrow); // e.g. "2025-08-31"
-
         const res = await fetch(
-          `http://localhost:8848/api/v1/candles?assest=${selectedSymbol?.toLowerCase()}usdt&duration=1m&startTime=2025-08-28&endTime=${todayDate}`,
+          `http://localhost:8848/api/v1/candles/market?symbol=${selectedSymbol}&interval=${duration}&startTime=${startTime}`,
           {
             headers: {
               "Content-Type": "application/json",
-              Authorization: `Bearer ${token}` ,
             },
           }
         );
 
         if (!res.ok) {
+          const errorData = await res.json();
+          toast.error(errorData.message || "Failed to fetch data");
           throw new Error(`HTTP error! Status: ${res.status}`);
         }
 
         const json = await res.json();
 
-        const candles: Candle[] = json.map((d: any) => ({
-          time: Math.floor(new Date(d.bucket).getTime() / 1000), // UNIX seconds
-          open: d.open,
-          high: d.high,
-          low: d.low,
-          close: d.close,
+        // Ensure json is an array
+        const dataArray = Array.isArray(json) ? json : json.data || [];
+
+        if (dataArray.length === 0) {
+          toast.warning("No candle data received");
+          return;
+        }
+
+        if (dataArray.length > 1400) {
+          toast.warning(
+            "Data range too large. Please select a smaller time range."
+          );
+          return;
+        }
+
+        const candles: Candle[] = dataArray.map((d: any) => ({
+          time: Math.floor(new Date(d.start).getTime() / 1000),
+          open: parseFloat(d.open),
+          high: parseFloat(d.high),
+          low: parseFloat(d.low),
+          close: parseFloat(d.close),
         }));
 
         candles.sort((a, b) => a.time - b.time);
-
-        seriesRef.current?.setData(candles as any);
-      } catch (err) {
+        seriesRef.current?.setData(candles);
+      } catch (err: any) {
         console.error("Failed to load chart data:", err);
+        toast.error(err.message || "Failed to load chart data");
+      } finally {
+        setIsLoading(false);
       }
     }
 
     fetchData();
-  }, [asset, duration, startTime, endTime, chartReady, selectedSymbol]);
+  }, [duration, chartReady, selectedSymbol, startTime]);
+
   return (
     <div className="w-full h-full relative flex align-center">
       <div className="w-full h-full" ref={ref} />
+      {isLoading && (
+        <div className="absolute inset-0 bg-black/20 backdrop-blur-sm flex items-center justify-center">
+          <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+        </div>
+      )}
     </div>
   );
 }

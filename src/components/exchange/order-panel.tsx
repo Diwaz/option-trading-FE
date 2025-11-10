@@ -11,6 +11,7 @@ import type { Ticker } from "@/components/exchange/ticker-list"
 import { useAssetStore, useTradeStore } from "@/store/useStore";
 import useSWR from "swr"
 import { apiFetch,apiRequest } from "@/lib/api-client"
+import { toast } from "sonner"
 
 type OrderResponse ={
   orderId: string
@@ -68,44 +69,18 @@ const mid = useMemo(() => {
           type: side,
         })
         console.log("Order response:", data)
+        toast("Order Placed Successfully")
         return data
   
       }
 catch (err) {
   console.error("Order request failed:", err)
+  toast(err.message)
   return null
 }
   }
   
-  // const openTrade = async () => {
-    // if (!selectedSymbol || !side) return
-    
-    // try {
-      //   const res = await fetch("http://localhost:5000/api/v1/trade/", {
-        //     method: "POST",
-        //     headers: { "Content-Type": "application/json" ,
-        //     Authorization: `Bearer ${token}` ,
-        //     },
-        //     body: JSON.stringify({
-          //       symbol: selectedSymbol,
-          //       margin,
-          //       leverage,
-          //       side,
-          //     }),
-          //   })
-          
-      //   if (!res.ok) {
-    //     throw new Error(`Server error: ${res.status}`)
-    //   }
 
-    //   const data = await res.json()
-    //   console.log("Trade opened:", data)
-    //   alert("Trade opened successfully!")
-    // } catch (err) {
-    //   console.error("Error opening trade:", err)
-    //   alert("Failed to open trade. Check console for details.")
-    // }
-  // }
   const confirmLabel =
     side === "buy"
       ? `Confirm Buy ${Number.isFinite(lots) ? volume : ""} lots`
