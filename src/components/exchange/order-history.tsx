@@ -37,7 +37,31 @@ export default function OrderHistory() {
     fetchTrades();
   },[fetchTrades])
 
+  const calculatePnl = (openPrice:string,leverage:number,margin:number,asset:string,type:string)=>{
+      // PnL = cp - sp
+      // cp = openPrice * qty
+      // sp = prices[selectedSymbol].ask * qty
+      // qty = margin * leverage / openPrice
+      const openPriceNumber = parseFloat(openPrice);
+      const quantity = margin*leverage / openPriceNumber
+      if(type==="buy"){
+        const sellingPrice = (prices[asset] ? prices[asset].ask : 160) * quantity;
+        const costPrice = openPriceNumber * quantity;
+      const pnl = sellingPrice-costPrice;
+      return pnl.toFixed(5);
+      }else{
+        const cp = openPriceNumber * quantity;
+        const sp =prices[asset] ?  prices[asset].bid : 160 * quantity;
+        const pnl = cp - sp;
+        return pnl.toFixed(5);
+        // pnl = cost price - sell price
+        //  cp = openPrice *qty
+        //  sp = livePrice.bid
+        // live.buy - open price
+      }
 
+
+  }
   const handleCloseOrder = async (id: string) => {
     try {
         const res = await apiRequest('/trade/close','POST',{
@@ -76,7 +100,7 @@ export default function OrderHistory() {
                     <TableHead className="w-[120px]">Symbol</TableHead>
                     <TableHead className="w-[72px]">Side</TableHead>
                     <TableHead className="w-[80px] text-right">Qty</TableHead>
-                    <TableHead className="w-[240px] text-center">Price</TableHead>
+                    <TableHead className="w-[240px] text-center">Opening Price</TableHead>
                     {/* <TableHead className="w-[120px] text-right">TP</TableHead>
                     <TableHead className="w-[120px] text-right">SL</TableHead> */}
                     <TableHead className="w-[220px]">PnL</TableHead>
@@ -87,11 +111,12 @@ export default function OrderHistory() {
                     <TableRow key={o.orderId} className="hover:bg-neutral-800/50">
                       <TableCell className="font-medium">{o.asset}</TableCell>
                       <TableCell className={o.type === "buy" ? "text-emerald-400" : "text-red-400"}>{o.type}</TableCell>
-                      <TableCell className="text-right">{fmt(o.leverage)}</TableCell>
-                      <TableCell className="text-center">{fmt(parseInt(o.openingPrice))}</TableCell>
+                      <TableCell className="text-right">{(o.margin*o.leverage/parseFloat(o.openingPrice)).toPrecision(2)}</TableCell>
+                      <TableCell className="text-center">{fmt(parseFloat(o.openingPrice))}</TableCell>
                       {/* <TableCell className="text-right">{o.margin ? fmt(o.margin) : "-"}</TableCell>
                       <TableCell className="text-right">{o.margin ? fmt(o.margin) : "-"}</TableCell> */}
-                      <TableCell>{prices[o.asset] ? prices[o.asset].ask : "-"  }</TableCell>
+                      {/* <TableCell>{prices[o.asset] ? prices[o.asset].ask : "-"  }</TableCell> */}
+                      <TableCell>{calculatePnl(o.openingPrice,o.leverage,o.margin,o.asset,o.type)}</TableCell>
                       <TableCell>
                         <Button size="sm" variant="ghost" className="text-red-400 hover:bg-red-800/50" onClick={()=>{handleCloseOrder(o.orderId)}}>
                           <TicketX/>
