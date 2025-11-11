@@ -63,10 +63,11 @@ const mid = useMemo(() => {
       console.log("Received order response:", data);
         addTrade({
           orderId: data.orderId,
-          asset: selectedSymbol!,
+          asset: selectedSymbol ?? " ",
           margin,
           leverage,
           type: side,
+          openingPrice: (price?.ask)?.toString() ?? " "
         })
         console.log("Order response:", data)
         toast("Order Placed Successfully")

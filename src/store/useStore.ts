@@ -12,7 +12,6 @@ type Order = {
   type: "buy" | "sell"
   orderId: string
   openingPrice:string;
-  requestId:string;
 }
 type AssetState = {
   selectedSymbol: string | null;   // only changes when user clicks
@@ -31,7 +30,7 @@ type AssetState = {
 }
 
 export const useAssetStore = create<AssetState>((set) => ({
-  selectedSymbol: "SOL_USDC",
+  selectedSymbol: "ETH_USDC",
   livePrices: {},
   setSelectedSymbol: (symbol) => set({ selectedSymbol: symbol }),
   updatePrice: (symbol, price) =>
@@ -57,6 +56,7 @@ export const useTradeStore = create<OrderState>((set)=>({
       try {
        const res = await apiRequest('/trade/open',"GET");
        const data = await res.message as Order[];
+       console.log("yaha dai",data)
         set({openTrades:data,loading:false})
       }catch(err){
           console.error('Failed to fetch orders',err)

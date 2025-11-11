@@ -31,11 +31,10 @@ export default function OrderHistory() {
   const prices = useAssetStore((state)=>state.livePrices) 
   const closedOrders = [];
 
+    console.log("open Orders",openTrades)
 
   useEffect(()=>{
     fetchTrades();
-    console.log("order fetched",fetchTrades)
-    console.log("open Orders",openTrades)
   },[fetchTrades])
 
 
@@ -45,7 +44,7 @@ export default function OrderHistory() {
             orderId: id
         })
         console.log("Close order response:", res);
-        toast("Order Closed Successfully")
+        toast(res.message)
         
         removeTrade(id);
     } catch (err) {
@@ -77,10 +76,10 @@ export default function OrderHistory() {
                     <TableHead className="w-[120px]">Symbol</TableHead>
                     <TableHead className="w-[72px]">Side</TableHead>
                     <TableHead className="w-[80px] text-right">Qty</TableHead>
-                    <TableHead className="w-[120px] text-right">Price</TableHead>
-                    <TableHead className="w-[120px] text-right">TP</TableHead>
-                    <TableHead className="w-[120px] text-right">SL</TableHead>
-                    <TableHead className="w-[100px]">PnL</TableHead>
+                    <TableHead className="w-[240px] text-center">Price</TableHead>
+                    {/* <TableHead className="w-[120px] text-right">TP</TableHead>
+                    <TableHead className="w-[120px] text-right">SL</TableHead> */}
+                    <TableHead className="w-[220px]">PnL</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -89,9 +88,9 @@ export default function OrderHistory() {
                       <TableCell className="font-medium">{o.asset}</TableCell>
                       <TableCell className={o.type === "buy" ? "text-emerald-400" : "text-red-400"}>{o.type}</TableCell>
                       <TableCell className="text-right">{fmt(o.leverage)}</TableCell>
-                      <TableCell className="text-right">{fmt(o.margin)}</TableCell>
-                      <TableCell className="text-right">{o.margin ? fmt(o.margin) : "-"}</TableCell>
-                      <TableCell className="text-right">{o.margin ? fmt(o.margin) : "-"}</TableCell>
+                      <TableCell className="text-center">{fmt(parseInt(o.openingPrice))}</TableCell>
+                      {/* <TableCell className="text-right">{o.margin ? fmt(o.margin) : "-"}</TableCell>
+                      <TableCell className="text-right">{o.margin ? fmt(o.margin) : "-"}</TableCell> */}
                       <TableCell>{prices[o.asset] ? prices[o.asset].ask : "-"  }</TableCell>
                       <TableCell>
                         <Button size="sm" variant="ghost" className="text-red-400 hover:bg-red-800/50" onClick={()=>{handleCloseOrder(o.orderId)}}>
