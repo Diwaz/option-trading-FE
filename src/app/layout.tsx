@@ -32,7 +32,13 @@ export default function RootLayout({
     <html lang="en" className="dark">
       <body>
         {!hideNavbar && <Navbar/>}
-        <Toaster/>
+        <Toaster
+       toastOptions={{
+    style: {
+      color:'#0f172a',
+    },
+  }} 
+        />
         <Suspense fallback={null}>{children}</Suspense>
 
       </body>

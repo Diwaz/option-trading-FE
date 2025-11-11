@@ -1,7 +1,6 @@
 
 "use client"
 
-import { useMemo } from "react"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
@@ -10,6 +9,8 @@ import { useAssetStore, useTradeStore } from "@/store/useStore"
 import { Button } from "../ui/button"
 import { apiRequest } from "@/lib/api-client"
 import { toast } from "sonner"
+import { TicketX } from "lucide-react"
+import { useEffect } from "react"
 
 type Order = {
   orderId: string
@@ -22,9 +23,21 @@ type Order = {
 const fmt = (v: number) => v.toLocaleString(undefined, { maximumFractionDigits: 2 })
 
 export default function OrderHistory() {
+
   const openTrades = useTradeStore((state)=>state.openTrades);
+  const fetchTrades = useTradeStore((state)=>state.fetchOrders);
+  
   const removeTrade = useTradeStore((state)=>state.removeTrade);
+  const prices = useAssetStore((state)=>state.livePrices) 
   const closedOrders = [];
+
+
+  useEffect(()=>{
+    fetchTrades();
+    console.log("order fetched",fetchTrades)
+    console.log("open Orders",openTrades)
+  },[fetchTrades])
+
 
   const handleCloseOrder = async (id: string) => {
     try {
@@ -79,10 +92,10 @@ export default function OrderHistory() {
                       <TableCell className="text-right">{fmt(o.margin)}</TableCell>
                       <TableCell className="text-right">{o.margin ? fmt(o.margin) : "-"}</TableCell>
                       <TableCell className="text-right">{o.margin ? fmt(o.margin) : "-"}</TableCell>
-                      <TableCell>(livePrice)</TableCell>
+                      <TableCell>{prices[o.asset] ? prices[o.asset].ask : "-"  }</TableCell>
                       <TableCell>
                         <Button size="sm" variant="ghost" className="text-red-400 hover:bg-red-800/50" onClick={()=>{handleCloseOrder(o.orderId)}}>
-                          x
+                          <TicketX/>
                         </Button>
                       </TableCell>
                     </TableRow>

@@ -25,6 +25,7 @@ export default function TickerList({ selectedId, onSelect }: Props) {
   const setSelectedSymbol = useAssetStore((state) => state.setSelectedSymbol);
   const updatePrice = useAssetStore((state) => state.updatePrice);
 
+  const selectedSymbol = useAssetStore((state) => state.selectedSymbol);
   useEffect(() => {
     const ws = new WebSocket("ws://localhost:8080")
 
@@ -94,7 +95,7 @@ export default function TickerList({ selectedId, onSelect }: Props) {
         <ScrollArea className="min-h-0 flex-1 overflow-x-hidden pr-1">
           <ul className="divide-y divide-border/60">
             {data.map((t) => {
-              const selected = t.asset === selectedId
+              const selected = t.asset === selectedSymbol
               return (
                 <li key={t.asset}>
                   <button

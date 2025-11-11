@@ -3,15 +3,17 @@
 import { toast } from "sonner";
 import { useEffect, useRef, useState } from "react";
 import {
+  CandlestickData,
   CandlestickSeries,
   createChart,
+  Time,
   type ISeriesApi,
 } from "lightweight-charts";
 
 import { useAssetStore } from "@/store/useStore";
 
 export type Candle = {
-  time: string;
+  time: number;
   open: number;
   high: number;
   low: number;
@@ -92,9 +94,9 @@ export default function Chart({ duration, startTime }: Props) {
 
       // if (data.topic?.startsWith("klines")) {
         const kline = data.data;
-          console.log("kline data",kline)
-        const newCandle = {
-          time: Math.floor(new Date(kline.t).getTime() / 1000),
+          // console.log("kline data",kline)
+        const newCandle:CandlestickData = {
+          time: Math.floor(new Date(kline.t).getTime() / 1000) as Time,
           open: parseFloat(kline.o),
           high: parseFloat(kline.h),
           low: parseFloat(kline.l),
@@ -185,7 +187,7 @@ export default function Chart({ duration, startTime }: Props) {
     <div className="w-full h-full relative flex align-center">
       <div className="w-full h-full" ref={ref} />
       {isLoading && (
-        <div className="absolute inset-0 bg-black/20 backdrop-blur-sm flex items-center justify-center">
+        <div className="absolute inset-0 bg-black/20 backdrop-blur-sm flex items-center justify-center z-10">
           <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
         </div>
       )}

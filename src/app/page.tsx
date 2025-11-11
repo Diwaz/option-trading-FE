@@ -34,7 +34,7 @@ export default function Page() {
 
   return (
     <main className="mx-auto w-full max-w-[1440px] p-4">
-      <div className="grid grid-cols-1 gap-2 md:grid-cols-[280px_minmax(0,1fr)_360px]">
+      <div className="grid grid-cols-1 gap-2 lg:grid-cols-[280px_minmax(0,1fr)_360px]">
         <section aria-label="Instruments" className="rounded-lg border bg-card text-card-foreground">
           <TickerList />
         </section>
@@ -84,7 +84,7 @@ export default function Page() {
         <section aria-label="Order panel" className="rounded-lg border bg-card text-card-foreground">
           <OrderPanel />
         </section>
-        <div className="min-h-0 w-full md:col-start-2">
+        <div className="min-h-0 w-full lg:col-start-2">
           <OrderHistory />
         </div>
       </div>
