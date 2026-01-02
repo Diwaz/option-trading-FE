@@ -1,5 +1,5 @@
 "use client"
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -12,6 +12,25 @@ import { useAssetStore, useTradeStore } from "@/store/useStore";
 import useSWR from "swr"
 import { apiFetch,apiRequest } from "@/lib/api-client"
 import { toast } from "sonner"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuPortal,
+  DropdownMenuSeparator,
+  DropdownMenuShortcut,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+
+import { ArrowDownRight, Menu } from "lucide-react"
+import { ASSET_LIST, getAssetLogo } from "@/constant/asset"
+import Image from "next/image"
+import { getAsset } from "node:sea"
 
 type OrderResponse ={
   orderId: string
@@ -31,6 +50,7 @@ const addTrade = useTradeStore((state) => state.addTrade)
 
 
 const price = useAssetStore((state) =>  selectedSymbol ? state.livePrices[selectedSymbol] : null);
+const livePrices = useAssetStore((state)=> state.livePrices);
 const bid = Number(price?.bid?.toFixed(2) ?? NaN)
 const ask = Number(price?.ask?.toFixed(2) ?? NaN)
 const mid = useMemo(() => {
@@ -95,26 +115,119 @@ catch (err) {
       : side === "buy"
         ? "bg-blue-600 text-white hover:bg-blue-700"
         : "bg-muted text-muted-foreground cursor-not-allowed"
+  const [tickerData, setTickerData] = useState<Ticker[]>([])
+  const setSelectedSymbol = useAssetStore((state) => state.setSelectedSymbol);
+  const updatePrice = useAssetStore((state) => state.updatePrice);
+
+  useEffect(() => {
+    const ws = new WebSocket("ws://localhost:8080")
+
+    ws.onmessage = (event) => {
+      try {
+        const parsed = JSON.parse(event.data)
+        // console.log("parsed data", parsed)
+
+        if (parsed.price_updates) {
+          setTickerData((prev) => {
+            const merged: Record<string, Ticker> = {}
+
+            // keep old values
+            prev.forEach((t) => {
+              merged[t.asset] = t
+            })
+
+            parsed.price_updates.forEach((u: Ticker) => {
+              // console.log("update", u)
+              const asset = u.asset.toUpperCase()
+              const newBid = u.buy 
+              const newAsk = u.ask 
+
+              const old = merged[asset]
+
+              merged[asset] = {
+                asset,
+                buy: newBid,
+                ask: newAsk,
+                bidChange: old
+                  ? newBid > old.buy
+                    ? "up"
+                    : newBid < old.buy
+                      ? "down"
+                      : null
+                  : null,
+                askChange: old
+                  ? newAsk > old.ask
+                    ? "up"
+                    : newAsk < old.ask
+                      ? "down"
+                      : null
+                  : null,
+              }
+              updatePrice(asset, { bid: newBid, ask: newAsk });
+            })
+            return Object.values(merged)
+          })
+        }
+      } catch (err) {
+        console.error("WS parse error:", err)
+      }
+    }
+
+    return () => {
+      ws.close()
+    }
+  }, [])
+
 
   return (
     <Card className="h-full">
       <CardHeader className="p-3">
-        <div className="flex items-center justify-between gap-2">
-          <CardTitle className="text-base text-pretty">
+        <div className="flex items-center justify-between gap-2 w-full">
+  <DropdownMenu >
+      <DropdownMenuTrigger asChild>
+          <CardTitle className="text-base text-pretty cursor-pointer gap-2 p-2 flex items-center justify-between">
+            <Image
+              src={getAssetLogo(selectedSymbol ?? "SOL_USDC")}
+              width={30}
+              height={30}
+              alt="ETH" />
             {selectedSymbol}
-            <span className="ml-2 text-xs font-normal text-muted-foreground">({selectedSymbol})</span>
+
+            {/* <span className="ml-2 text-xs font-normal text-muted-foreground">({selectedSymbol})</span> */}
+            <ArrowDownRight width={15} height={20} className=""/>
           </CardTitle>
-          <Badge
-            variant="secondary">
-            {/* // className={
-            //   ticker.changePct >= 0
-            //     ? "border-green-600/20 bg-green-600/10 text-green-400"
-            //     : "border-red-600/20 bg-red-600/10 text-red-400"
-            // }
-          
-            {/* {ticker.changePct >= 0 ? "+" : ""}
-            // {ticker.changePct}% */} 
-          </Badge>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent className="w-80" align="start" >
+        <DropdownMenuLabel>Assets</DropdownMenuLabel>
+        <DropdownMenuGroup>
+          {/* <DropdownMenuSeparator /> */}
+          {ASSET_LIST.map((asset) => (
+            <>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+            key={asset.key}
+            onClick={() => {
+              setSelectedSymbol(asset.key);
+            }}
+            >
+            {/* <DropdownMenuSeparator /> */}
+              <div className="flex items-center gap-2">
+                <Image
+                  src={getAssetLogo(asset.key)}
+                  width={20}
+                  height={20}
+                  alt={asset.key}
+                  />
+                <span className="text-sm">{asset.name}</span>
+              </div>
+              <DropdownMenuShortcut>{livePrices[asset.key] ? (livePrices[asset.key].bid ??  "--").toString() : "--"}</DropdownMenuShortcut>
+            </DropdownMenuItem>
+                  </>
+          ))}
+        </DropdownMenuGroup>
+
+      </DropdownMenuContent>
+    </DropdownMenu>
         </div>
       </CardHeader>
 
