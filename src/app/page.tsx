@@ -33,13 +33,13 @@ export default function Page() {
   }, [selectedRange]);
 
   return (
-    <main className="mx-auto w-full max-w-[1440px] p-4">
-      <div className="grid grid-cols-1 gap-2 lg:grid-cols-[280px_minmax(0,1fr)_360px]">
-        <section aria-label="Instruments" className="rounded-lg border bg-card text-card-foreground">
+    <main className="mx-auto w-full">
+      <div className="grid grid-cols-1  lg:grid-cols-[minmax(0,1fr)_360px]">
+        {/* <section aria-label="Instruments" className=" bg-card text-card-foreground">
           <TickerList />
-        </section>
+        </section> */}
 
-        <section aria-label="Chart" className="rounded-lg border bg-card text-card-foreground">
+        <section aria-label="Chart" className=" border bg-card text-card-foreground">
           <div className="p-2 border-b">
             <div className="flex justify-between">
               <div className="flex gap-1">
@@ -81,13 +81,13 @@ export default function Page() {
           <Chart duration={selectedInterval} startTime={startTime} />
         </section>
 
-        <section aria-label="Order panel" className="rounded-lg border bg-card text-card-foreground">
+        <section aria-label="Order panel" className="bg-card text-card-foreground">
           <OrderPanel />
         </section>
+      </div>
         <div className="min-h-0 w-full lg:col-start-2">
           <OrderHistory />
         </div>
-      </div>
     </main>
   )
 }

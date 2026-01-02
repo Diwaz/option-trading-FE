@@ -189,29 +189,7 @@ catch (err) {
           </div>
         </div>
 
-        <Tabs defaultValue="market" className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="market">Market</TabsTrigger>
-            <TabsTrigger value="pending">Pending</TabsTrigger>
-          </TabsList>
 
-          <TabsContent value="market" className="mt-3">
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <Switch id="tp" checked={tpOn} onCheckedChange={setTpOn} />
-                  <Label htmlFor="tp">Take Profit</Label>
-                </div>
-                <Input placeholder="Price" disabled={!tpOn} className="w-32" inputMode="decimal" />
-              </div>
-
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <Switch id="sl" checked={slOn} onCheckedChange={setSlOn} />
-                  <Label htmlFor="sl">Stop Loss</Label>
-                </div>
-                <Input placeholder="Price" disabled={!slOn} className="w-32" inputMode="decimal" />
-              </div>
 
               <div className="pt-2">
                 <Button
@@ -227,8 +205,7 @@ catch (err) {
                   Cancel
                 </Button>
               </div>
-
-              <div className="mt-2 rounded-md border p-2 text-xs">
+ <div className="mt-2 rounded-md border p-2 text-xs">
                 <div className="flex items-center justify-between">
                   <span className="text-muted-foreground">Fees:</span>
                   <span className="tabular-nums">≈ {fees.toFixed(2)} USD</span>
@@ -242,50 +219,7 @@ catch (err) {
                   <span className="tabular-nums">{margin.toFixed(2)} USD</span>
                 </div>
               </div>
-            </div>
-          </TabsContent>
-
-          <TabsContent value="pending" className="mt-3">
-            <div className="space-y-3">
-              <div>
-                <Label htmlFor="pending-price">Entry price</Label>
-                <Input id="pending-price" placeholder="e.g. 108750.00" inputMode="decimal" />
-              </div>
-              <div className="grid grid-cols-2 gap-2">
-                <div>
-                  <Label htmlFor="pending-tp">Take Profit</Label>
-                  <Input id="pending-tp" placeholder="Optional" inputMode="decimal" />
-                </div>
-                <div>
-                  <Label htmlFor="pending-sl">Stop Loss</Label>
-                  <Input id="pending-sl" placeholder="Optional" inputMode="decimal" />
-                </div>
-              </div>
-
-              {/* Pending flow could also use side + confirm; keeping UI consistent */}
-              <div className="grid grid-cols-2 gap-2 pt-2">
-                <Button
-                  type="button"
-                  variant={side === "sell" ? "destructive" : "outline"}
-                  onClick={() => setSide("sell")}
-                >
-                  Select Sell
-                </Button>
-                <Button
-                  type="button"
-                  variant={side === "buy" ? "default" : "outline"}
-                  onClick={() => setSide("buy")}
-                  className={side === "buy" ? "" : "bg-transparent"}
-                >
-                  Select Buy
-                </Button>
-              </div>
-              <Button type="button" className={`w-full h-10 ${confirmClasses}`} disabled={!side} onClick={sendOrder}>
-                {confirmLabel}
-              </Button>
-            </div>
-          </TabsContent>
-        </Tabs>
+  
       </CardContent>
     </Card>
   )
