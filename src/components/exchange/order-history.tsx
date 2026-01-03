@@ -128,7 +128,7 @@ export default function OrderHistory() {
                       >{pnl.toFixed(2)}
                       <div>
 
-                      {""} {((pnl / o.margin)*100).toFixed(2)} {"% "}
+                      {"("} {((pnl / o.margin)*100).toFixed(2)} {"%) "}
                       </div>
                       </TableCell>
                       <TableCell className="">

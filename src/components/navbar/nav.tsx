@@ -8,6 +8,7 @@ import AuthStatus from "../auth/auth-status"
 import Image from "next/image"
 import { Bell, Settings, Wallet2 } from "lucide-react"
 import { Button } from "../ui/button"
+import { useAssetStore, useTradeStore } from "@/store/useStore"
 
 type BalanceResponse = {
   usd_balance?: number
@@ -31,12 +32,45 @@ const fetchBalance = async (): Promise<BalanceResponse | null> => {
 }
 
 export default function Navbar() {
+
+
+
   const { data, isLoading, mutate } = useSWR<BalanceResponse | null>("balance", fetchBalance, {
     refreshInterval: 3000,
     revalidateOnFocus: false,
   })
 
   const [authed, setAuthed] = useState(false)
+
+  const openTrades = useTradeStore((state)=>state.openTrades);
+  const prices = useAssetStore((state)=>state.livePrices)
+
+  const getUnrealized = ()=>{
+
+        return     openTrades.reduce((acc,trade)=>{
+            const openPriceNumber = parseFloat(trade.openingPrice);
+      const quantity = trade.margin*trade.leverage / openPriceNumber
+      if(trade.type==="buy"){
+        const sellingPrice = (prices[trade.asset] ? prices[trade.asset].ask : 160) * quantity;
+        const costPrice = openPriceNumber * quantity;
+      const pnl = sellingPrice-costPrice;
+      return pnl + acc;
+      }else{
+        const cp = openPriceNumber * quantity;
+        const sp =(prices[trade.asset] ?  prices[trade.asset].bid : 130) * quantity;
+        const pnl = cp - sp;
+        return pnl + acc;
+        // pnl = cost price - sell price
+        //  cp = openPrice *qty
+        //  sp = livePrice.bid
+        // live.buy - open price
+      }
+    },0) 
+
+  }
+
+  const unrealizedPnl = getUnrealized();
+
   useEffect(() => {
     setAuthed(!!localStorage.getItem("auth_token"))
   }, [])
@@ -94,7 +128,7 @@ export default function Navbar() {
           <div className="  px-3 py-1.5 text-xs md:text-sm flex items-center gap-2">
 
             <div className="text-xs text-[#62686D]">Unrealized PnL</div>
-            <div className="text-[#1FB658] font-semibold">+$200.44</div>
+            <div className={`${unrealizedPnl >= 0 ? "text-green-400" : "text-red-500"} font-semibold`}>{unrealizedPnl.toFixed(2)}</div>
           </div>
  <div className="mx-1 h-8  w-px bg-border" />
  <Button variant="ghost" size="icon" className="h-9 w-9 text-muted-foreground hover:text-foreground">
