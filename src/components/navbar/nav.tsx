@@ -6,7 +6,8 @@ import { useCallback, useEffect, useMemo, useState } from "react"
 import { apiFetch } from "@/lib/api-client"
 import AuthStatus from "../auth/auth-status"
 import Image from "next/image"
-import { Wallet2 } from "lucide-react"
+import { Bell, Settings, Wallet2 } from "lucide-react"
+import { Button } from "../ui/button"
 
 type BalanceResponse = {
   usd_balance?: number
@@ -90,6 +91,18 @@ export default function Navbar() {
 
         {/* Right: Balance + Logout */}
         <div className="flex justify-around  items-center gap-2">
+          <div className="  px-3 py-1.5 text-xs md:text-sm flex items-center gap-2">
+
+            <div className="text-xs text-[#62686D]">Unrealized PnL</div>
+            <div className="text-[#1FB658] font-semibold">+$200.44</div>
+          </div>
+ <div className="mx-1 h-8  w-px bg-border" />
+ <Button variant="ghost" size="icon" className="h-9 w-9 text-muted-foreground hover:text-foreground">
+            <Bell className="h-5 w-5" />
+          </Button>
+          <Button variant="ghost" size="icon" className="h-9 w-9 text-muted-foreground hover:text-foreground">
+            <Settings className="h-5 w-5" />
+          </Button>
           <div
             className="rounded-md border border-border bg-background px-3 py-1.5 text-xs md:text-sm flex items-center gap-2"
             aria-live="polite"

@@ -37,10 +37,10 @@ export default function Chart({ duration, startTime }: Props) {
     if (!ref.current) return;
 
     const chart = createChart(ref.current, {
-      layout: { background: { color: "#14151b" }, textColor: "#94a3b8" },
+      layout: { background: { color: "#171717" }, textColor: "#94a3b8" },
       grid: {
-        vertLines: { color: "#202128" },
-        horzLines: { color: "#202128" },
+        vertLines: { color: "#2E2E2E" },
+        horzLines: { color: "#2E2E2E" },
       },
       rightPriceScale: { borderColor: "#0b1220" },
       timeScale: { borderColor: "#0b1220" },

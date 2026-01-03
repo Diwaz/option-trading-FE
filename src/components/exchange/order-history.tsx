@@ -11,6 +11,7 @@ import { apiRequest } from "@/lib/api-client"
 import { toast } from "sonner"
 import { TicketX } from "lucide-react"
 import { useEffect } from "react"
+import { ScrollArea } from "../ui/scroll-area"
 
 type Order = {
   orderId: string
@@ -31,7 +32,7 @@ export default function OrderHistory() {
   const prices = useAssetStore((state)=>state.livePrices) 
   const closedOrders = [];
 
-    console.log("open Orders",openTrades)
+    // console.log("open Orders",openTrades)
 
   useEffect(()=>{
     fetchTrades();
@@ -94,7 +95,7 @@ export default function OrderHistory() {
           </TabsList>
 
           <TabsContent value="open" className="m-0">
-            <div className="overflow-auto">
+            <div className="overflow-scroll h-[360px]">
               <Table>
                 <TableHeader>
                   <TableRow className="hover:bg-transparent">
@@ -109,11 +110,11 @@ export default function OrderHistory() {
                     <TableHead className="w-[220px]">Action</TableHead>
                   </TableRow>
                 </TableHeader>
-                <TableBody>
+                <TableBody >
                   {openTrades.map((o) => {
                     const pnl = calculatePnl(o.openingPrice,o.leverage,o.margin,o.asset,o.type)
                     return (
-                    <TableRow key={o.orderId} className="hover:bg-neutral-800/50">
+                      <TableRow key={o.orderId} className="hover:bg-neutral-800/50">
                       <TableCell className="font-medium">{o.asset}</TableCell>
                       <TableCell className={o.type === "buy" ? "text-[#1FB658] bg-[#153A31] flex items-center justify-center m-2 rounded-sm" : "text-[#CB3B3D] bg-[#3E1F2A] flex items-center justify-center m-2 rounded-sm"}>{(o.type).toUpperCase()}</TableCell>
                       <TableCell className="text-right">{(o.margin*o.leverage/parseFloat(o.openingPrice)).toPrecision(2)}</TableCell>

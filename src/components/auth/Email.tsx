@@ -75,7 +75,7 @@ export function Email({
         <div className="w-full max-w-lg flex flex-col gap-6">
           <div className="flex flex-col gap-2">
             <h1 className="text-3xl md:text-4xl font-semibold tracking-tighter text-center">
-              Welcome to 100x<span className="text-blue-700">Trade</span>
+              Welcome to Flux <span className="text-blue-700">Trade</span>
             </h1>
           </div>
           <div className="rounded-3xl p-6 transition-all duration-300 flex flex-col bg-muted/50">

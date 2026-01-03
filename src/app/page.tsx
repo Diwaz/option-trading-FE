@@ -33,12 +33,8 @@ export default function Page() {
   }, [selectedRange]);
 
   return (
-    <main className="mx-auto w-full">
+    <main className="mx-auto w-full h-screen flex flex-col">
       <div className="grid grid-cols-1  lg:grid-cols-[minmax(0,1fr)_400px]">
-        {/* <section aria-label="Instruments" className=" bg-card text-card-foreground">
-          <TickerList />
-        </section> */}
-
         <section aria-label="Chart" className=" border-r bg-card text-card-foreground">
           <div className="p-2 border-b">
             <div className="flex justify-between">

@@ -28,7 +28,7 @@ export default function AuthStatus() {
             <Button
               size="sm"
               variant="ghost"
-              className="h-7 text-emerald-100 hover:text-emerald-50 hover:bg-emerald-800/50"
+              className="h-5 text-emerald-100 hover:text-emerald-50 hover:bg-emerald-800/50"
               onClick={() => clearToken()}
             >
               Logout
