@@ -34,21 +34,21 @@ export default function Page() {
 
   return (
     <main className="mx-auto w-full">
-      <div className="grid grid-cols-1  lg:grid-cols-[minmax(0,1fr)_360px]">
+      <div className="grid grid-cols-1  lg:grid-cols-[minmax(0,1fr)_400px]">
         {/* <section aria-label="Instruments" className=" bg-card text-card-foreground">
           <TickerList />
         </section> */}
 
-        <section aria-label="Chart" className=" border bg-card text-card-foreground">
+        <section aria-label="Chart" className=" border-r bg-card text-card-foreground">
           <div className="p-2 border-b">
             <div className="flex justify-between">
-              <div className="flex gap-1">
+              <div className="flex">
                 {timeIntervals.map((interval) => (
                   <button
                     key={interval.value}
                     onClick={() => setSelectedInterval(interval.value)}
                     className={`
-                      px-3 py-1 rounded text-sm font-medium transition-colors
+                      px-3 py-1 text-sm font-medium transition-colors
                       ${selectedInterval === interval.value
                         ? 'bg-primary text-primary-foreground'
                         : 'bg-secondary hover:bg-secondary/80 text-secondary-foreground'
@@ -59,15 +59,15 @@ export default function Page() {
                   </button>
                 ))}
               </div>
-              <div className="flex gap-1">
+              <div className="flex">
                 {timeRanges.map((range) => (
                   <button
                     key={range.value}
                     onClick={() => setSelectedRange(range.value)}
                     className={`
-                      px-3 py-1 rounded text-sm font-medium transition-colors
+                      px-3 py-1  text-sm font-medium transition-colors
                       ${selectedRange === range.value
-                        ? 'bg-primary text-primary-foreground'
+                        ? 'bg-primary text-primary-foreground '
                         : 'bg-secondary hover:bg-secondary/80 text-secondary-foreground'
                       }
                     `}
@@ -85,7 +85,7 @@ export default function Page() {
           <OrderPanel />
         </section>
       </div>
-        <div className="min-h-0 w-full lg:col-start-2">
+        <div className="h-full w-full">
           <OrderHistory />
         </div>
     </main>

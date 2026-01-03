@@ -20,12 +20,12 @@ type Props = {
 }
 
 export default function TickerList({ selectedId, onSelect }: Props) {
-  const [data, setData] = useState<Ticker[]>([])
   // console.log('state Data', data)
+  const selectedSymbol = useAssetStore((state) => state.selectedSymbol);
+  const [data, setData] = useState<Ticker[]>([])
   const setSelectedSymbol = useAssetStore((state) => state.setSelectedSymbol);
   const updatePrice = useAssetStore((state) => state.updatePrice);
 
-  const selectedSymbol = useAssetStore((state) => state.selectedSymbol);
   useEffect(() => {
     const ws = new WebSocket("ws://localhost:8080")
 

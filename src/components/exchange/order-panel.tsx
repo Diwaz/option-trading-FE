@@ -1,16 +1,12 @@
 "use client"
 import { useEffect, useMemo, useState } from "react"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Switch } from "@/components/ui/switch"
-import { Badge } from "@/components/ui/badge"
 import type { Ticker } from "@/components/exchange/ticker-list"
 import { useAssetStore, useTradeStore } from "@/store/useStore";
-import useSWR from "swr"
-import { apiFetch,apiRequest } from "@/lib/api-client"
+import { apiRequest } from "@/lib/api-client"
 import { toast } from "sonner"
 import {
   DropdownMenu,
@@ -18,31 +14,25 @@ import {
   DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuPortal,
   DropdownMenuSeparator,
   DropdownMenuShortcut,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-
+import { Slider } from "@/components/ui/slider"
 import { ArrowDownRight, Menu } from "lucide-react"
 import { ASSET_LIST, getAssetLogo } from "@/constant/asset"
 import Image from "next/image"
-import { getAsset } from "node:sea"
 
 type OrderResponse ={
   orderId: string
 }  
 export default function OrderPanel() {
 const [volume, setVolume] = useState("0.50")
-const [tpOn, setTpOn] = useState(false)
-const [slOn, setSlOn] = useState(false)
 
 const [side, setSide] = useState<"buy" | "sell">("buy")
-const leverageStops = [1, 5, 10, 20, 100] as const
-const [leverage, setLeverage] = useState<(typeof leverageStops)[number]>(10)
+// const leverageStops = [1, 5, 10, 20, 100] as const
+const [leverage, setLeverage] = useState(1)
+// const [leverageSlider, setleverageSlider] = useState(0)
 const selectedSymbol = useAssetStore((state) => state.selectedSymbol)
 const addTrade = useTradeStore((state) => state.addTrade)
 
@@ -60,7 +50,6 @@ const mid = useMemo(() => {
   }, [bid, ask])  
 
   const lots = Number(volume) || 0
-  const contractSize = 100 // demo contract size for UI math
   const notional = Number.isFinite(mid) ? mid * lots: 0
   const feeRate = 0.01 // 0.10% example
   const fees = notional*feeRate;
@@ -104,9 +93,9 @@ catch (err) {
 
   const confirmLabel =
     side === "buy"
-      ? `Confirm Buy ${Number.isFinite(lots) ? volume : ""} lots`
+      ? `BUY  ($ ${Number.isFinite(margin) ? margin.toFixed(2) : ""} )`
       : side === "sell"
-        ? `Confirm Sell ${Number.isFinite(lots) ? volume : ""} lots`
+        ? ` SELL ($ ${Number.isFinite(margin) ? margin.toFixed(2) : ""} )`
         : "Confirm"
 
   const confirmClasses =
@@ -180,29 +169,30 @@ catch (err) {
 
 
   return (
-    <Card className="h-full">
-      <CardHeader className="p-3">
+    <Card className="h-full rounded-none border-0">
+      <CardHeader className="px-3">
         <div className="flex items-center justify-between gap-2 w-full">
   <DropdownMenu >
       <DropdownMenuTrigger asChild>
-          <CardTitle className="text-base text-pretty cursor-pointer gap-2 p-2 flex items-center justify-between">
+          <CardTitle className="text-base text-pretty cursor-pointer gap-2 p-2 flex items-center justify-between font-mono border-2">
             <Image
               src={getAssetLogo(selectedSymbol ?? "SOL_USDC")}
               width={30}
               height={30}
               alt="ETH" />
+
             {selectedSymbol}
 
             {/* <span className="ml-2 text-xs font-normal text-muted-foreground">({selectedSymbol})</span> */}
-            <ArrowDownRight width={15} height={20} className=""/>
+            <ArrowDownRight width={15} height={20} />
           </CardTitle>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-80" align="start" >
+      <DropdownMenuContent className="w-80 rounded-none" align="start" >
         <DropdownMenuLabel>Assets</DropdownMenuLabel>
         <DropdownMenuGroup>
           {/* <DropdownMenuSeparator /> */}
           {ASSET_LIST.map((asset) => (
-            <>
+            <div key={asset.key}>
             <DropdownMenuSeparator />
             <DropdownMenuItem
             key={asset.key}
@@ -222,7 +212,7 @@ catch (err) {
               </div>
               <DropdownMenuShortcut>{livePrices[asset.key] ? (livePrices[asset.key].bid ??  "--").toString() : "--"}</DropdownMenuShortcut>
             </DropdownMenuItem>
-                  </>
+                  </div>
           ))}
         </DropdownMenuGroup>
 
@@ -268,38 +258,26 @@ catch (err) {
         </div>
 
         {/* Controls (no Symbol, no Spread) */}
-        <div className="mb-3 grid grid-cols-2 gap-2">
-          <div>
-            <Label htmlFor="volume">Volume</Label>
+        <div className="flex flex-col gap-2 py-2">
+          <div className="mb-2 flex flex-col gap-2">
+            <Label htmlFor="volume" className="font-mono">Quantity</Label>
             <Input
               id="volume"
               value={volume}
               onChange={(e) => setVolume(e.target.value)}
               inputMode="decimal"
               aria-describedby="vol-help"
+              className="border-0 h-12"
             />
-            <p id="vol-help" className="mt-1 text-[10px] text-muted-foreground">
-              Lots
-            </p>
+
           </div>
-          <div>
+          <div className="flex flex-col gap-2">
             <Label className="block">Leverage</Label>
-            <div className="mt-1 grid grid-cols-5 gap-1">
-              {leverageStops.map((lv) => (
-                <Button
-                  key={lv}
-                  type="button"
-                  size="sm"
-                  variant={leverage === lv ? "default" : "outline"}
-                  onClick={() => setLeverage(lv)}
-                  className={leverage === lv ? "h-8" : "h-8 bg-transparent text-muted-foreground hover:text-foreground"}
-                  aria-pressed={leverage === lv}
-                >
-                  {lv}x
-                </Button>
-              ))}
-            </div>
+          
           </div>
+         {leverage}x 
+<Slider defaultValue={[0]} min={1} max={20} step={1}  value={[leverage]} onValueChange={(vals:number[])=> setLeverage(vals[0])} />
+
         </div>
 
 
@@ -314,9 +292,7 @@ catch (err) {
                 >
                   {confirmLabel}
                 </Button>
-                <Button type="button" variant="secondary" className="mt-2 w-full h-9">
-                  Cancel
-                </Button>
+
               </div>
  <div className="mt-2 rounded-md border p-2 text-xs">
                 <div className="flex items-center justify-between">

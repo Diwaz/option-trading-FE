@@ -37,25 +37,25 @@ export default function Chart({ duration, startTime }: Props) {
     if (!ref.current) return;
 
     const chart = createChart(ref.current, {
-      layout: { background: { color: "#0f172a" }, textColor: "#94a3b8" },
+      layout: { background: { color: "#14151b" }, textColor: "#94a3b8" },
       grid: {
-        vertLines: { color: "#1e293b" },
-        horzLines: { color: "#1e293b" },
+        vertLines: { color: "#202128" },
+        horzLines: { color: "#202128" },
       },
       rightPriceScale: { borderColor: "#0b1220" },
       timeScale: { borderColor: "#0b1220" },
       crosshair: { mode: 1 },
       width: ref.current.clientWidth,
-      height: ref.current.clientHeight,
+      height: 600,
     });
 
     const series = chart.addSeries(CandlestickSeries, {
-      upColor: "#26a69a",
-      downColor: "#ef5350",
-      borderUpColor: "#26a69a",
-      borderDownColor: "#ef5350",
-      wickUpColor: "#26a69a",
-      wickDownColor: "#ef5350",
+      upColor: "#039e64",
+      downColor: "#CE484B",
+      borderUpColor: "#039e64",
+      borderDownColor: "#CE484B",
+      wickUpColor: "#039e64",
+      wickDownColor: "#CE484B",
     });
 
     seriesRef.current = series;
@@ -184,7 +184,7 @@ export default function Chart({ duration, startTime }: Props) {
   }, [duration, chartReady, selectedSymbol, startTime]);
 
   return (
-    <div className="w-full h-full relative flex align-center">
+    <div className="w-full h-[600px] relative flex align-center max-h-[600px]">
       <div className="w-full h-full" ref={ref} />
       {isLoading && (
         <div className="absolute inset-0 bg-black/20 backdrop-blur-sm flex items-center justify-center z-10">
