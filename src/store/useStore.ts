@@ -13,6 +13,11 @@ type Order = {
   orderId: string
   openingPrice:string;
 }
+
+interface ClosedOrder extends Order {
+  pnl: number,
+  closingPrice: string
+}
 type AssetState = {
   selectedSymbol: string | null;   // only changes when user clicks
   livePrices: Record<string, Price>;
@@ -22,6 +27,7 @@ type AssetState = {
 
  type OrderState = {
   openTrades: Order[],
+  closedTrades: ClosedOrder[],
   addTrade: (trade:Order)=>void;
   removeTrade: (id:string)=> void; 
   clearTrade: ()=> void;
@@ -42,6 +48,7 @@ export const useAssetStore = create<AssetState>((set) => ({
 export const useTradeStore = create<OrderState>((set)=>({
 
   openTrades: [],
+  closedTrades: [],
   loading:false,
 
   addTrade : (trade) =>
@@ -55,9 +62,12 @@ export const useTradeStore = create<OrderState>((set)=>({
       })
       try {
        const res = await apiRequest('/trade/open',"GET");
+       const closeTradeRes = await apiRequest('/trade/closed-orders',"GET");
+       const closedTrades = await closeTradeRes.closedOrders as ClosedOrder[];
        const data = await res.message as Order[];
-       console.log("yaha dai",data)
+      //  console.log("yaha dai",data)
         set({openTrades:data,loading:false})
+        set({closedTrades:closedTrades,loading:false})
       }catch(err){
           console.error('Failed to fetch orders',err)
           set({loading:false})
@@ -69,7 +79,8 @@ export const useTradeStore = create<OrderState>((set)=>({
       return  trade.orderId !== id;
       }
       )
-    })),
+    }))
+    ,
 
 
   clearTrade:()=>set({

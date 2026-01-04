@@ -1,4 +1,3 @@
-
 "use client"
 
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
@@ -9,7 +8,6 @@ import { useAssetStore, useTradeStore } from "@/store/useStore"
 import { Button } from "../ui/button"
 import { apiRequest } from "@/lib/api-client"
 import { toast } from "sonner"
-import { TicketX } from "lucide-react"
 import { useEffect } from "react"
 import { ScrollArea } from "../ui/scroll-area"
 
@@ -27,10 +25,10 @@ export default function OrderHistory() {
 
   const openTrades = useTradeStore((state)=>state.openTrades);
   const fetchTrades = useTradeStore((state)=>state.fetchOrders);
-  
+ const closedTrades = useTradeStore((state)=>state.closedTrades); 
+
   const removeTrade = useTradeStore((state)=>state.removeTrade);
   const prices = useAssetStore((state)=>state.livePrices) 
-  const closedOrders = [];
 
     // console.log("open Orders",openTrades)
 
@@ -154,34 +152,65 @@ export default function OrderHistory() {
           </TabsContent>
 
           <TabsContent value="closed" className="m-0">
-            <div className="overflow-auto">
+            <div className="overflow-scroll h-[360px]">
               <Table>
                 <TableHeader>
                   <TableRow className="hover:bg-transparent">
                     <TableHead className="w-[120px]">Symbol</TableHead>
-                    <TableHead className="w-[72px]">Side</TableHead>
+                    <TableHead className="w-[72px] text-center">Side</TableHead>
                     <TableHead className="w-[80px] text-right">Qty</TableHead>
-                    <TableHead className="w-[120px] text-right">Price</TableHead>
-                    <TableHead className="w-[120px] text-right">PnL</TableHead>
-                    <TableHead className="w-[100px]">Time</TableHead>
+                    <TableHead className="w-[80px] text-right">Leverage</TableHead>
+                    <TableHead className="w-[240px] text-center">Opening Price</TableHead>
+                    <TableHead className="w-[220px] text-center">Mark Price</TableHead>
+                    <TableHead className="w-[220px]">PnL{"(ROE %)"}</TableHead>
+                    {/* <TableHead className="w-[220px]">Action</TableHead> */}
+                    <TableHead className="w-[180px] text-center">Closed Time</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {/* {closedOrders.map((o) => (
-                    <TableRow key={o.id} className="hover:bg-neutral-800/50">
-                      <TableCell className="font-medium">{o.symbol}</TableCell>
-                      <TableCell className={o.side === "Buy" ? "text-emerald-400" : "text-red-400"}>{o.side}</TableCell>
-                      <TableCell className="text-right">{fmt(o.qty)}</TableCell>
-                      <TableCell className="text-right">{fmt(o.price)}</TableCell>
-                      <TableCell className={`text-right ${o.pnl && o.pnl < 0 ? "text-red-400" : "text-emerald-400"}`}>
-                        {o.pnl !== null && o.pnl !== undefined ? fmt(o.pnl) : "-"}
-                      </TableCell>
-                      <TableCell>{o.time}</TableCell>
-                    </TableRow>
-                  ))} */}
-                  {closedOrders.length === 0 && (
+                  {closedTrades.length > 0 && closedTrades.map((raw: any, i: number) => {
+                    // normalize backend shape to frontend shape
+                    const id = raw.orderId ?? raw.tradeId ?? `closed-${i}`;
+                    const asset = raw.asset ?? raw.symbol ?? "UNKNOWN";
+                    const type = (raw.type ?? raw.side ?? "").toString().toLowerCase();
+                    const openingPrice = Number(raw.openingPrice ?? raw.buyPrice ?? raw.buyPrice ?? 0)/1e4;
+                    const margin = Number(raw.margin ?? raw.margin ?? 0)/1e2;
+                    const leverage = Number(raw.leverage ?? 1);
+                    const qty = openingPrice ? (margin * leverage / openingPrice) : (raw.quantity ?? 0);
+                    const pnl = Number(raw.pnl ?? 0)/1e2;
+                    const markPrice = (raw.margin ?? 0)/1e2;
+                    const dummyClosedTime = new Date().toLocaleString(); // replace when real closed time available
+                    console.log("from closed trades aarrayy",openingPrice,dummyClosedTime)
+
+                    return (
+                      <TableRow key={id} className="hover:bg-neutral-800/50">
+                        <TableCell className="font-medium">{asset}</TableCell>
+                        <TableCell className={type === "buy" ? "text-[#1FB658] bg-[#153A31] flex items-center justify-center m-2 rounded-sm" : "text-[#CB3B3D] bg-[#3E1F2A] flex items-center justify-center m-2 rounded-sm"}>
+                          {(type || "-").toUpperCase()}
+                        </TableCell>
+                        <TableCell className="text-right">{qty ? qty.toPrecision(2) : "-"}</TableCell>
+                        <TableCell className="text-[#1FB658] flex justify-end ">1:{leverage}</TableCell>
+                        <TableCell className="text-center">$ {fmt(Number(openingPrice))}</TableCell>
+                        <TableCell className="text-center">$ {fmt(Number(markPrice))}</TableCell>
+                        <TableCell className={pnl > 0 ? "text-green-400" : "text-red-500"}>
+                          {pnl.toFixed(2)}
+                          <div>{"("} { ((margin !== 0) ? ((pnl / margin) * 100).toFixed(2) : "0.00") } {"%)"}</div>
+                        </TableCell>
+                        {/* <TableCell className="">
+                          <Button size="sm" variant="ghost" className="text-[#CB3B3D] border-[#3E1F2A] border flex items-center justify-center m-2 rounded-sm">
+                            Details
+                          </Button>
+                        </TableCell> */}
+                        <TableCell className="text-center">
+                          {dummyClosedTime}
+                        </TableCell>
+                      </TableRow>
+                    )
+                  })}
+
+                  {closedTrades.length === 0 && (
                     <TableRow>
-                      <TableCell colSpan={6} className="text-center text-neutral-400 py-8">
+                      <TableCell colSpan={9} className="text-center text-neutral-400 py-8">
                         No closed orders
                       </TableCell>
                     </TableRow>
