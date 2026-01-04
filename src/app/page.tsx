@@ -25,7 +25,7 @@ type TimeRange = typeof timeRanges[number]["value"];
 
 export default function Page() {
   const [selectedInterval, setSelectedInterval] = useState<TimeInterval>("5m");
-  const [selectedRange, setSelectedRange] = useState<TimeRange>(timeRanges[0].value);
+  const [selectedRange, setSelectedRange] = useState<TimeRange>(timeRanges[1].value);
 
   const startTime = useMemo(() => {
     const now = new Date().getTime();

@@ -9,6 +9,7 @@ import Image from "next/image"
 import { Bell, Settings, Wallet2 } from "lucide-react"
 import { Button } from "../ui/button"
 import { useAssetStore, useTradeStore } from "@/store/useStore"
+import { getToken, onAuthChange } from "@/lib/auth"
 
 type BalanceResponse = {
   usd_balance?: number
@@ -33,7 +34,14 @@ const fetchBalance = async (): Promise<BalanceResponse | null> => {
 
 export default function Navbar() {
 
+  const [token, setToken] = useState<string | null>(null)
+  useEffect(() => {
+    setToken(getToken())
+    const off = onAuthChange(() => setToken(getToken()))
+    return () => off()
+  }, [])
 
+  const loggedIn = !!token
 
   const { data, isLoading, mutate } = useSWR<BalanceResponse | null>("balance", fetchBalance, {
     refreshInterval: 3000,
@@ -122,13 +130,14 @@ export default function Navbar() {
             Flux
           </Link>
         </div>
-
-        {/* Right: Balance + Logout */}
         <div className="flex justify-around  items-center gap-2">
+    {
+      loggedIn && (
+<>
           <div className="  px-3 py-1.5 text-xs md:text-sm flex items-center gap-2">
 
             <div className="text-xs text-[#62686D]">Unrealized PnL</div>
-            <div className={`${unrealizedPnl >= 0 ? "text-green-400" : "text-red-500"} font-semibold`}>{unrealizedPnl.toFixed(2)}</div>
+            <div className={`${unrealizedPnl >= 0 ? "text-green-400" : "text-red-500"} font-semibold`}>$ {unrealizedPnl.toFixed(2)}</div>
           </div>
  <div className="mx-1 h-8  w-px bg-border" />
  <Button variant="ghost" size="icon" className="h-9 w-9 text-muted-foreground hover:text-foreground">
@@ -140,11 +149,14 @@ export default function Navbar() {
           <div
             className="rounded-md border border-border bg-background px-3 py-1.5 text-xs md:text-sm flex items-center gap-2"
             aria-live="polite"
-          >
+            >
             <Wallet2 width={20} height={20}/>
             <span className="text-muted-foreground mr-2">Balance</span>
             <span className={isLoading ? "opacity-70" : ""}>{isLoading ? "Loading..." : formattedBalance}</span>
           </div>
+            </>
+      )
+    }
             <AuthStatus />
           
         </div>

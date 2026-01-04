@@ -100,12 +100,13 @@ export default function OrderHistory() {
                 <TableHeader>
                   <TableRow className="hover:bg-transparent">
                     <TableHead className="w-[120px]">Symbol</TableHead>
-                    <TableHead className="w-[72px]">Side</TableHead>
+                    <TableHead className="w-[72px] text-center ">Side</TableHead>
                     <TableHead className="w-[80px] text-right">Qty</TableHead>
                     <TableHead className="w-[80px] text-right">Leverage</TableHead>
                     <TableHead className="w-[240px] text-center">Opening Price</TableHead>
                     {/* <TableHead className="w-[120px] text-right">TP</TableHead>
                     <TableHead className="w-[120px] text-right">SL</TableHead> */}
+                    <TableHead className="w-[220px] text-center">Mark Price</TableHead>
                     <TableHead className="w-[220px]">PnL{"(ROE %)"}</TableHead>
                     <TableHead className="w-[220px]">Action</TableHead>
                   </TableRow>
@@ -116,10 +117,11 @@ export default function OrderHistory() {
                     return (
                       <TableRow key={o.orderId} className="hover:bg-neutral-800/50">
                       <TableCell className="font-medium">{o.asset}</TableCell>
-                      <TableCell className={o.type === "buy" ? "text-[#1FB658] bg-[#153A31] flex items-center justify-center m-2 rounded-sm" : "text-[#CB3B3D] bg-[#3E1F2A] flex items-center justify-center m-2 rounded-sm"}>{(o.type).toUpperCase()}</TableCell>
+                      <TableCell className={o.type === "buy" ? "text-[#1FB658] bg-[#153A31] flex items-center justify-center m-2 max-w-20 rounded-sm" : "text-[#CB3B3D] bg-[#3E1F2A] flex items-center justify-center m-2 max-w-20 rounded-sm"}>{(o.type).toUpperCase()}</TableCell>
                       <TableCell className="text-right">{(o.margin*o.leverage/parseFloat(o.openingPrice)).toPrecision(2)}</TableCell>
                       <TableCell className="text-[#1FB658] flex justify-end ">1:{o.leverage}</TableCell>
                       <TableCell className="text-center">$ {fmt(parseFloat(o.openingPrice))}</TableCell>
+                      <TableCell className="text-center">$ {fmt(o.margin)}</TableCell>
                       {/* <TableCell className="text-right">{o.margin ? fmt(o.margin) : "-"}</TableCell>
                       <TableCell className="text-right">{o.margin ? fmt(o.margin) : "-"}</TableCell> */}
                       {/* <TableCell>{prices[o.asset] ? prices[o.asset].ask : "-"  }</TableCell> */}
