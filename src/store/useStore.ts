@@ -1,5 +1,5 @@
 import { apiRequest } from "@/lib/api-client";
-import { Asset, CloseTradeResponse, OpenOrderResponse } from "@/types/type";
+import { Asset, ClosedTradesResponse, OpenOrderResponse } from "@/types/type";
 import { create } from "zustand";
 
 type Price = {
@@ -65,7 +65,7 @@ export const useTradeStore = create<OrderState>((set)=>({
       })
       try {
        const res = await apiRequest<OpenOrderResponse>('/trade/open',"GET");
-       const closeTradeRes = await apiRequest<CloseTradeResponse>('/trade/closed-orders',"GET");
+       const closeTradeRes = await apiRequest<ClosedTradesResponse>('/trade/closed-orders',"GET");
        const closedTrades = await closeTradeRes.closedOrders;
        const data = await res.message as Order[];
       //  console.log("yaha dai",data)

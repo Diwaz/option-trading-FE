@@ -31,6 +31,12 @@ export interface ClosedOrder extends Order {
   closingPrice: string,
   closedTime: string
 }
-export interface CloseTradeResponse {
+export interface ClosedTradesResponse {
     closedOrders: ClosedOrder[]
+}
+export interface CloseTradeBody{
+    orderId:string
+}
+export interface CloseTradeResponse {
+    message: string
 }

@@ -22,7 +22,7 @@ import { Slider } from "@/components/ui/slider"
 import { ArrowDownRight, Menu } from "lucide-react"
 import { ASSET_LIST, getAssetLogo } from "@/constant/asset"
 import Image from "next/image"
-import { TradeBody, TradeResponse } from "@/types/type"
+import { Asset, TradeBody, TradeResponse } from "@/types/type"
 
 type OrderResponse ={
   orderId: string
@@ -87,8 +87,14 @@ const mid = useMemo(() => {
   
       }
 catch (err) {
-  console.error("Order request failed:", err)
-  toast(err.message)
+console.error("Order Request Failed", err);
+        const message =
+          err instanceof Error
+            ? err.message
+            : typeof err === "string"
+            ? err
+            : JSON.stringify(err) || "Order Request Failed";
+        toast.error(message);
   return null
 }
   }
@@ -112,11 +118,11 @@ catch (err) {
   const updatePrice = useAssetStore((state) => state.updatePrice);
 
   // safe finder: normalize asset key and return askChange/bidChange if available
-  const findChange = (asset?: string): string => {
+  const findChange = (asset?: string): string | undefined => {
     if (!asset) return "up";
     const key = asset.toUpperCase();
     const item = tickerData.find((t) => (t.asset ?? "").toUpperCase() === key);
-    return item?.askChange;
+    return item?.askChange ?? "still";
   };
   const assetChange = findChange(selectedSymbol ?? "SOL_USDC");
 
@@ -213,7 +219,7 @@ catch (err) {
             <DropdownMenuItem
             key={asset.key}
             onClick={() => {
-              setSelectedSymbol(asset.key);
+              setSelectedSymbol(asset.key as Asset);
             }}
             >
             {/* <DropdownMenuSeparator /> */}

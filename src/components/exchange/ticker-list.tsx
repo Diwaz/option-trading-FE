@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { cn } from "@/lib/utils"
 import { useAssetStore } from "@/store/useStore"
+import { Asset } from "@/types/type"
 
 export type Ticker = {
   asset: string
@@ -103,7 +104,7 @@ export default function TickerList({ selectedId, onSelect }: Props) {
 
                     onClick={() => {
 
-                      setSelectedSymbol(t.asset)
+                      setSelectedSymbol(t.asset as Asset)
                     }
 
                     }

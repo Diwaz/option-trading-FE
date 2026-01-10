@@ -10,14 +10,9 @@ import { apiRequest } from "@/lib/api-client"
 import { toast } from "sonner"
 import { useEffect } from "react"
 import { RefreshCcw } from "lucide-react"
+import { ClosedOrder, CloseTradeBody, CloseTradeResponse } from "@/types/type"
 
-type Order = {
-  orderId: string
-  asset: string
-  type: "Buy" | "Sell"
-  leverage: number,
-  margin: number,
-}
+
 
 const fmt = (v: number) => v.toLocaleString(undefined, { maximumFractionDigits: 2 })
 
@@ -63,7 +58,7 @@ export default function OrderHistory() {
   }
   const handleCloseOrder = async (id: string) => {
     try {
-        const res = await apiRequest('/trade/close','POST',{
+        const res = await apiRequest<CloseTradeResponse,CloseTradeBody>('/trade/close','POST',{
             orderId: id
         })
 
@@ -187,13 +182,14 @@ export default function OrderHistory() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {closedTrades.length > 0 && closedTrades.map((raw: any, i: number) => {
+                  
+                  {closedTrades.length > 0 && closedTrades.map((raw: ClosedOrder, i: number) => {
                     // normalize backend shape to frontend shape
-                    const id = raw.orderId ?? raw.tradeId ?? `closed-${i}`;
-                    const asset = raw.asset ?? raw.symbol ?? "UNKNOWN";
-                    const type = (raw.type ?? raw.side ?? "").toString().toLowerCase();
-                    const openingPrice = Number(raw.openingPrice ?? raw.buyPrice ?? raw.buyPrice ?? 0)/1e4;
-                    const margin = Number(raw.margin ?? raw.margin ?? 0)/1e2;
+                    const id = raw.orderId  ?? `closed-${i}`;
+                    const asset = raw.asset  ?? "UNKNOWN";
+                    const type = (raw.type  ?? "").toString().toLowerCase();
+                    const openingPrice = Number(raw.openingPrice  ?? 0)/1e4;
+                    const margin = Number(raw.margin ?? 0)/1e2;
                     const leverage = Number(raw.leverage ?? 1);
                     const qty = (margin * leverage / openingPrice).toFixed(2) ;
                     const pnl = Number(raw.pnl ?? 0)/1e4;

@@ -13,17 +13,25 @@ import {
 import { useAssetStore } from "@/store/useStore";
 
 export type Candle = {
-  time: number;
+  time: Time;
   open: number;
   high: number;
   low: number;
   close: number;
 };
+ type RawCandle = {
+  start: string,
+  open:string,
+  high:string,
+  low:string,
+  close:string
+ }
 
 type Props = {
   duration: string;
   startTime: number;
 };
+
 
 export default function Chart({ duration, startTime }: Props) {
   const ref = useRef<HTMLDivElement | null>(null);
@@ -162,7 +170,7 @@ export default function Chart({ duration, startTime }: Props) {
           return;
         }
 
-        const candles: Candle[] = dataArray.map((d: any) => ({
+        const candles: Candle[] = dataArray.map((d: RawCandle) => ({
           time: Math.floor(new Date(d.start).getTime() / 1000),
           open: parseFloat(d.open),
           high: parseFloat(d.high),
@@ -170,11 +178,17 @@ export default function Chart({ duration, startTime }: Props) {
           close: parseFloat(d.close),
         }));
 
-        candles.sort((a, b) => a.time - b.time);
+        candles.sort((a, b) => Number(a.time) - Number(b.time));
         seriesRef.current?.setData(candles);
-      } catch (err: any) {
+      } catch (err) {
         console.error("Failed to load chart data:", err);
-        toast.error(err.message || "Failed to load chart data");
+        const message =
+          err instanceof Error
+            ? err.message
+            : typeof err === "string"
+            ? err
+            : JSON.stringify(err) || "Failed to load chart data";
+        toast.error(message);
       } finally {
         setIsLoading(false);
       }
