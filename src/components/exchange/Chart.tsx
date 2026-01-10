@@ -38,12 +38,15 @@ export default function Chart({ duration, startTime }: Props) {
   const seriesRef = useRef<ISeriesApi<"Candlestick"> | null>(null);
   const [chartReady, setChartReady] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [height, setHeight] = useState<number>(600)
 
   const selectedSymbol = useAssetStore((state) => state.selectedSymbol);
 
   useEffect(() => {
     if (!ref.current) return;
 
+    const newHeight = window.innerHeight < 600 ? 400 : 600;
+    setHeight(newHeight);
     const chart = createChart(ref.current, {
       layout: { background: { color: "#171717" }, textColor: "#94a3b8" },
       grid: {
@@ -54,7 +57,7 @@ export default function Chart({ duration, startTime }: Props) {
       timeScale: { borderColor: "#0b1220" },
       crosshair: { mode: 1 },
       width: ref.current.clientWidth,
-      height: 600,
+      height: height,
     });
 
     const series = chart.addSeries(CandlestickSeries, {
@@ -198,7 +201,7 @@ export default function Chart({ duration, startTime }: Props) {
   }, [duration, chartReady, selectedSymbol, startTime]);
 
   return (
-    <div className="w-full h-[600px] relative flex align-center max-h-[600px]">
+    <div className="w-full h-[400px] lg:h-[600px] relative flex align-center max-h-[600px]">
       <div className="w-full h-full" ref={ref} />
       {isLoading && (
         <div className="absolute inset-0 bg-black/20 backdrop-blur-sm flex items-center justify-center z-10">

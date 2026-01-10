@@ -3,7 +3,7 @@
 
 import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
-import { CheckCircle2, LogOut } from "lucide-react"
+import { CheckCircle2, LogOut, LogOutIcon } from "lucide-react"
 import { clearToken, getToken, onAuthChange } from "@/lib/auth"
 import { useRouter } from "next/navigation"
 // Shows a "logged in" logo when authenticated and a "logout" logo when not logged in.
@@ -23,13 +23,12 @@ export default function AuthStatus() {
     <>
       <div className=" ">
         {loggedIn ? (
-          <div className="inline-flex items-center gap-2 rounded-md bg-emerald-900/40 border border-emerald-700 px-2.5 py-1.5 text-emerald-200">
-            <CheckCircle2 className="size-5" aria-label="Logged in" />
+          <div className="inline-flex items-center gap-2 rounded-md bg-emerald-900/40 border border-emerald-700 px-2.5 py-1.5 text-emerald-200" onClick={()=>clearToken()}>
+            <LogOutIcon className=" h-3"  aria-label="Logged in" />
             <Button
               size="sm"
               variant="ghost"
-              className="h-5 text-emerald-100 hover:text-emerald-50 hover:bg-emerald-800/50"
-              onClick={() => clearToken()}
+              className="h-5 text-emerald-100 hover:text-emerald-50 hover:bg-emerald-800/50 hidden sm:block"
             >
               Logout
             </Button>

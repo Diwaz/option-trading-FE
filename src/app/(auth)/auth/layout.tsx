@@ -5,7 +5,6 @@ import type { Metadata } from "next"
 // import { Analytics } from "@vercel/analytics/next"
 import { Suspense } from "react"
 import "../../globals.css"
-import { Toaster } from "sonner";
 
 
 export const metadata: Metadata = {

@@ -1,7 +1,6 @@
 "use client"
 
 import { useMemo, useState } from "react"
-import TickerList, { type Ticker } from "@/components/exchange/ticker-list"
 import Chart from "@/components/exchange/Chart"
 import OrderPanel from "@/components/exchange/order-panel"
 import OrderHistory from "@/components/exchange/order-history"

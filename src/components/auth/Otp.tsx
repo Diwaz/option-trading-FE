@@ -21,7 +21,6 @@ import {
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import Link from "next/link";
 import { setToken } from "@/lib/auth";
 import { apiRequest } from "@/lib/api-client";
 
@@ -76,6 +75,7 @@ const BACKEND_URL = 'http://localhost:8848/api/v1'
         toast(data.message || "Failed to resend OTP");
       }
     } catch (error) {
+      console.log("error",error)
       setLoading(false);
       toast("Failed to resend OTP");
     }
@@ -128,6 +128,7 @@ const BACKEND_URL = 'http://localhost:8848/api/v1'
                 email,
             })
         }catch(e){
+          console.log("error",e)
             setLoading(false);
             toast("An error occured while initializing account,Please Contact Team");
         }
@@ -137,6 +138,7 @@ const BACKEND_URL = 'http://localhost:8848/api/v1'
         toast(data.message || "Verification failed");
       }
     } catch (error) {
+      console.log("error",error)
       setLoading(false);
       toast("An error occurred. Please try again.");
     }

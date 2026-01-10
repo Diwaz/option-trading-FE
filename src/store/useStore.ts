@@ -1,5 +1,6 @@
 import { apiRequest } from "@/lib/api-client";
-import { Asset, ClosedTradesResponse, OpenOrderResponse } from "@/types/type";
+import { Asset, ClosedTradesResponse, OpenOrderResponse,DBClosedOrderSchema } from "@/types/type";
+
 import { create } from "zustand";
 
 type Price = {
@@ -16,11 +17,6 @@ type Order = {
   slippage: number,
 }
 
-interface ClosedOrder extends Order {
-  pnl: number,
-  closingPrice: string,
-  closedTime: string
-}
 type AssetState = {
   selectedSymbol: Asset;   
   livePrices: Record<string, Price>;
@@ -30,7 +26,7 @@ type AssetState = {
 
  type OrderState = {
   openTrades: Order[],
-  closedTrades: ClosedOrder[],
+  closedTrades: DBClosedOrderSchema[],
   addTrade: (trade:Order)=>void;
   removeTrade: (id:string)=> void; 
   clearTrade: ()=> void;

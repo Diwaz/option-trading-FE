@@ -1,7 +1,7 @@
 "use client"
 
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { useAssetStore, useTradeStore } from "@/store/useStore"
 
@@ -10,7 +10,7 @@ import { apiRequest } from "@/lib/api-client"
 import { toast } from "sonner"
 import { useEffect } from "react"
 import { RefreshCcw } from "lucide-react"
-import { ClosedOrder, CloseTradeBody, CloseTradeResponse } from "@/types/type"
+import {  CloseTradeBody, CloseTradeResponse, DBClosedOrderSchema } from "@/types/type"
 
 
 
@@ -72,13 +72,13 @@ export default function OrderHistory() {
     }
   }
   return (
-    <Card className="h-full bg-neutral-900 text-neutral-200 w-full rounded-none">
+    <Card className="h-full bg-background dark:bg-neutral-900 text-neutral-200 w-full rounded-none">
 
       <CardContent className="p-0">
         <Tabs defaultValue="open" className="w-full">
           <div className="flex items-center justify-between px-2 pr-6">
 
-          <TabsList className="h-10 bg-neutral-900 px-3 py-0  rounded-none">
+          <TabsList className="h-10 bg-background dark:bg-neutral-900 px-3 py-0  rounded-none">
             <TabsTrigger value="open" className="data-[state=active]:bg-neutral-800 data-[state=active]:text-white">
               Open Positions {"("}
               {openTrades.length}
@@ -183,12 +183,12 @@ export default function OrderHistory() {
                 </TableHeader>
                 <TableBody>
                   
-                  {closedTrades.length > 0 && closedTrades.map((raw: ClosedOrder, i: number) => {
+                  {closedTrades.length > 0 && closedTrades.map((raw: DBClosedOrderSchema, i: number) => {
                     // normalize backend shape to frontend shape
                     const id = raw.orderId  ?? `closed-${i}`;
-                    const asset = raw.asset  ?? "UNKNOWN";
-                    const type = (raw.type  ?? "").toString().toLowerCase();
-                    const openingPrice = Number(raw.openingPrice  ?? 0)/1e4;
+                    const asset = raw.symbol  ?? "UNKNOWN";
+                    const type = (raw.side  ?? "").toString().toLowerCase();
+                    const openingPrice = Number(raw.buyPrice  ?? 0)/1e4;
                     const margin = Number(raw.margin ?? 0)/1e2;
                     const leverage = Number(raw.leverage ?? 1);
                     const qty = (margin * leverage / openingPrice).toFixed(2) ;

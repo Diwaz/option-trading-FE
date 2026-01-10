@@ -19,7 +19,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Slider } from "@/components/ui/slider"
-import { ArrowDownRight, Menu } from "lucide-react"
+import { ArrowDownRight } from "lucide-react"
 import { ASSET_LIST, getAssetLogo } from "@/constant/asset"
 import Image from "next/image"
 import { Asset, TradeBody, TradeResponse } from "@/types/type"

@@ -2,10 +2,9 @@
 
 import useSWR from "swr"
 import Link from "next/link"
-import { useCallback, useEffect, useMemo, useState } from "react"
+import {  useEffect, useMemo, useState } from "react"
 import { apiFetch } from "@/lib/api-client"
 import AuthStatus from "../auth/auth-status"
-import Image from "next/image"
 import { Bell, Settings, Wallet2 } from "lucide-react"
 import { Button } from "../ui/button"
 import { useAssetStore, useTradeStore } from "@/store/useStore"
@@ -43,7 +42,7 @@ export default function Navbar() {
 
   const loggedIn = !!token
 
-  const { data, isLoading, mutate } = useSWR<BalanceResponse | null>("balance", fetchBalance, {
+  const { data, isLoading } = useSWR<BalanceResponse | null>("balance", fetchBalance, {
     refreshInterval: 3000,
     revalidateOnFocus: false,
   })
@@ -94,12 +93,6 @@ export default function Navbar() {
     }
   }, [data?.message])
 
-  const handleLogout = useCallback(() => {
-    localStorage.removeItem("auth_token")
-    setAuthed(false)
-    // trigger a revalidation so the balance shows as em dash after logout
-    mutate(null, { revalidate: true })
-  }, [mutate])
 
   return (
     <header className="sticky top-0 z-40 w-full border-b border-border bg-card/60 backdrop-blur">
@@ -126,32 +119,36 @@ export default function Navbar() {
             <animate attributeName="y2" values="10;12;10;8;10;" dur="3s" begin="indefinite" keyTimes="0;0.3;0.5;0.7;1" keySplines="0.6 0 1 1; 0 0 1 1; 0 0 1 1; 0 0 0.4 1" calcMode="spline"></animate>
         </line>
     </svg>
-          {/* <Image src="/flux.png" width={100} height={100} alt="F"/> */}
+    <div className="hidden sm:block">
             Flux
+    </div>
           </Link>
         </div>
         <div className="flex justify-around  items-center gap-2">
     {
       loggedIn && (
 <>
-          <div className="  px-3 py-1.5 text-xs md:text-sm flex items-center gap-2">
+          <div className="  px-3 py-1.5 text-xs md:text-sm md:flex md:items-center md:gap-2">
 
             <div className="text-xs text-[#62686D]">Unrealized PnL</div>
             <div className={`${unrealizedPnl >= 0 ? "text-green-400" : "text-red-500"} font-semibold`}>$ {unrealizedPnl.toFixed(2)}</div>
           </div>
- <div className="mx-1 h-8  w-px bg-border" />
+          <div className="sm:flex hidden">
+
+ <div className="mx-1 h-8  w-px bg-border " />
  <Button variant="ghost" size="icon" className="h-9 w-9 text-muted-foreground hover:text-foreground">
             <Bell className="h-5 w-5" />
           </Button>
           <Button variant="ghost" size="icon" className="h-9 w-9 text-muted-foreground hover:text-foreground">
             <Settings className="h-5 w-5" />
           </Button>
+          </div>
           <div
             className="rounded-md border border-border bg-background px-3 py-1.5 text-xs md:text-sm flex items-center gap-2"
             aria-live="polite"
             >
             <Wallet2 width={20} height={20}/>
-            <span className="text-muted-foreground mr-2">Balance</span>
+            <span className="text-muted-foreground mr-2 hidden sm:block">Balance</span>
             <span className={isLoading ? "opacity-70" : ""}>{isLoading ? "Loading..." : formattedBalance}</span>
           </div>
             </>

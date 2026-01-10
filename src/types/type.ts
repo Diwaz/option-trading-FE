@@ -20,7 +20,18 @@ export type Order = {
   openingPrice:string;
   slippage:number,
 }
-
+export type DBClosedOrderSchema = {
+  margin: number,
+  leverage:number,
+  symbol: Asset,
+  side: "buy" | "sell"
+  orderId: string
+  buyPrice:string;
+  slippage:number,
+  pnl: number,
+  closingPrice:string,
+  closedTime: string
+}
 
 export interface OpenOrderResponse {
     message: Order[]
@@ -32,7 +43,7 @@ export interface ClosedOrder extends Order {
   closedTime: string
 }
 export interface ClosedTradesResponse {
-    closedOrders: ClosedOrder[]
+    closedOrders: DBClosedOrderSchema[]
 }
 export interface CloseTradeBody{
     orderId:string

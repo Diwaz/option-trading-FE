@@ -15,12 +15,9 @@ export type Ticker = {
   bidChange?: "up" | "down" | null
   askChange?: "up" | "down" | null
 }
-type Props = {
-  selectedId?: string
-  onSelect?: (symbol: string) => void
-}
 
-export default function TickerList({ selectedId, onSelect }: Props) {
+
+export default function TickerList() {
   // console.log('state Data', data)
   const selectedSymbol = useAssetStore((state) => state.selectedSymbol);
   const [data, setData] = useState<Ticker[]>([])
