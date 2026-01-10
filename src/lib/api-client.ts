@@ -24,11 +24,11 @@ const API_BASE_URL = "http://localhost:8848/api/v1"
 
 type HttpMethod = "GET" | "POST" | "PUT" | "DELETE"
 
-export async function apiRequest<T>(
+export async function apiRequest<TResponse,TBody = unknown>(
   endpoint: string,
   method: HttpMethod ,
-  body?: Record<string, string>
-): Promise<T> {
+  body?: TBody
+): Promise<TResponse> {
   try {
     // 👇 Load auth token from localStorage
     const token = localStorage.getItem("auth_token")
@@ -48,7 +48,7 @@ export async function apiRequest<T>(
       throw new Error(error.message)
     }
 
-    return (await res.json()) as T
+    return (await res.json()) as TResponse;
   } catch (err) {
     console.log("we reached here",err)
     console.error("API request failed:", err)

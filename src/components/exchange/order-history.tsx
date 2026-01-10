@@ -9,7 +9,7 @@ import { Button } from "../ui/button"
 import { apiRequest } from "@/lib/api-client"
 import { toast } from "sonner"
 import { useEffect } from "react"
-import { ScrollArea } from "../ui/scroll-area"
+import { RefreshCcw } from "lucide-react"
 
 type Order = {
   orderId: string
@@ -81,6 +81,8 @@ export default function OrderHistory() {
 
       <CardContent className="p-0">
         <Tabs defaultValue="open" className="w-full">
+          <div className="flex items-center justify-between px-2 pr-6">
+
           <TabsList className="h-10 bg-neutral-900 px-3 py-0  rounded-none">
             <TabsTrigger value="open" className="data-[state=active]:bg-neutral-800 data-[state=active]:text-white">
               Open Positions {"("}
@@ -91,7 +93,12 @@ export default function OrderHistory() {
               Closed Trades
             </TabsTrigger>
           </TabsList>
-
+          <div className="cursor-pointer" onClick={()=>{
+              fetchTrades();
+          }}>
+            <RefreshCcw className="hover:text-gray-500"/> 
+            </div> 
+          </div>
           <TabsContent value="open" className="m-0">
             <div className="overflow-scroll h-[360px]">
               <Table>
@@ -125,11 +132,23 @@ export default function OrderHistory() {
                       {/* <TableCell>{prices[o.asset] ? prices[o.asset].ask : "-"  }</TableCell> */}
                       <TableCell
                       className={pnl > 0 ? "text-green-400" : "text-red-500"}
-                      >{pnl.toFixed(2)}
+                      >
+                        {/* {pnl < 0 && Math.abs(((pnl/o.margin)*100)) > (90/o.leverage) ? <div>liquidated</div>: 
+                        <>
+                        {pnl.toFixed(2)}
                       <div>
 
                       {"("} {((pnl / o.margin)*100).toFixed(2)} {"%) "}
                       </div>
+                          </>
+                          } */}
+                         <>
+                        {pnl.toFixed(2)}
+                      <div>
+
+                      {"("} {((pnl / o.margin)*100).toFixed(2)} {"%) "}
+                      </div>
+                          </>                       
                       </TableCell>
                       <TableCell className="">
                         <Button size="sm" variant="ghost" className="text-[#CB3B3D] border-[#3E1F2A] border  flex items-center justify-center m-2 rounded-sm" onClick={()=>{handleCloseOrder(o.orderId)}}>
@@ -176,11 +195,10 @@ export default function OrderHistory() {
                     const openingPrice = Number(raw.openingPrice ?? raw.buyPrice ?? raw.buyPrice ?? 0)/1e4;
                     const margin = Number(raw.margin ?? raw.margin ?? 0)/1e2;
                     const leverage = Number(raw.leverage ?? 1);
-                    const qty = openingPrice ? (margin * leverage / openingPrice) : (raw.quantity ?? 0);
-                    const pnl = Number(raw.pnl ?? 0)/1e2;
+                    const qty = (margin * leverage / openingPrice).toFixed(2) ;
+                    const pnl = Number(raw.pnl ?? 0)/1e4;
                     const markPrice = (raw.margin ?? 0)/1e2;
-                    const dummyClosedTime = new Date().toLocaleString(); // replace when real closed time available
-                    console.log("from closed trades aarrayy",openingPrice,dummyClosedTime)
+                    const ClosedTime = raw.closedTime; // replace when real closed time available
 
                     return (
                       <TableRow key={id} className="hover:bg-neutral-800/50">
@@ -188,11 +206,12 @@ export default function OrderHistory() {
                         <TableCell className={type === "buy" ? "text-[#1FB658] bg-[#153A31] flex items-center justify-center m-2 rounded-sm" : "text-[#CB3B3D] bg-[#3E1F2A] flex items-center justify-center m-2 rounded-sm"}>
                           {(type || "-").toUpperCase()}
                         </TableCell>
-                        <TableCell className="text-right">{qty ? qty.toPrecision(2) : "-"}</TableCell>
+                        <TableCell className="text-right">{qty}</TableCell>
                         <TableCell className="text-[#1FB658] flex justify-end ">1:{leverage}</TableCell>
                         <TableCell className="text-center">$ {fmt(Number(openingPrice))}</TableCell>
                         <TableCell className="text-center">$ {fmt(Number(markPrice))}</TableCell>
                         <TableCell className={pnl > 0 ? "text-green-400" : "text-red-500"}>
+
                           {pnl.toFixed(2)}
                           <div>{"("} { ((margin !== 0) ? ((pnl / margin) * 100).toFixed(2) : "0.00") } {"%)"}</div>
                         </TableCell>
@@ -202,7 +221,7 @@ export default function OrderHistory() {
                           </Button>
                         </TableCell> */}
                         <TableCell className="text-center">
-                          {dummyClosedTime}
+                          {ClosedTime}
                         </TableCell>
                       </TableRow>
                     )

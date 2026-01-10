@@ -1,4 +1,5 @@
 import { apiRequest } from "@/lib/api-client";
+import { Asset, CloseTradeResponse, OpenOrderResponse } from "@/types/type";
 import { create } from "zustand";
 
 type Price = {
@@ -12,16 +13,18 @@ type Order = {
   type: "buy" | "sell"
   orderId: string
   openingPrice:string;
+  slippage: number,
 }
 
 interface ClosedOrder extends Order {
   pnl: number,
-  closingPrice: string
+  closingPrice: string,
+  closedTime: string
 }
 type AssetState = {
-  selectedSymbol: string | null;   // only changes when user clicks
+  selectedSymbol: Asset;   
   livePrices: Record<string, Price>;
-  setSelectedSymbol: (symbol: string) => void;
+  setSelectedSymbol: (symbol: Asset) => void;
   updatePrice: (symbol: string, price: Price) => void;
 };
 
@@ -61,9 +64,9 @@ export const useTradeStore = create<OrderState>((set)=>({
         loading:true
       })
       try {
-       const res = await apiRequest('/trade/open',"GET");
-       const closeTradeRes = await apiRequest('/trade/closed-orders',"GET");
-       const closedTrades = await closeTradeRes.closedOrders as ClosedOrder[];
+       const res = await apiRequest<OpenOrderResponse>('/trade/open',"GET");
+       const closeTradeRes = await apiRequest<CloseTradeResponse>('/trade/closed-orders',"GET");
+       const closedTrades = await closeTradeRes.closedOrders;
        const data = await res.message as Order[];
       //  console.log("yaha dai",data)
         set({openTrades:data,loading:false})

@@ -22,6 +22,7 @@ import { Slider } from "@/components/ui/slider"
 import { ArrowDownRight, Menu } from "lucide-react"
 import { ASSET_LIST, getAssetLogo } from "@/constant/asset"
 import Image from "next/image"
+import { TradeBody, TradeResponse } from "@/types/type"
 
 type OrderResponse ={
   orderId: string
@@ -59,11 +60,12 @@ const mid = useMemo(() => {
   const sendOrder = async (): Promise<OrderResponse | null> => {
     console.log("Sending order to server:", { symbol: selectedSymbol, margin, leverage, type:side });
     try {
-      const res = await apiRequest("/trade/create", "POST",
+      const res = await apiRequest<TradeResponse,TradeBody>("/trade/create", "POST",
       {
             asset: selectedSymbol ?? "ETH_USDC",
-            margin:(Math.trunc(margin*1e2)).toString(),
-            leverage:leverage.toString(),
+            margin:(Math.trunc(margin*1e2)),
+            leverage:leverage,
+            slippage:1,
             type:side,
           },
       )
@@ -75,6 +77,7 @@ const mid = useMemo(() => {
           asset: selectedSymbol ?? " ",
           margin,
           leverage,
+          slippage:1,
           type: side,
           openingPrice: (price?.ask)?.toString() ?? " "
         })
@@ -102,7 +105,7 @@ catch (err) {
     side === "sell"
       ? "bg-red-600 text-white hover:bg-red-700"
       : side === "buy"
-        ? "bg-blue-600 text-white hover:bg-blue-700"
+        ? "bg-green-600 text-white hover:bg-green-700"
         : "bg-muted text-muted-foreground cursor-not-allowed"
   const [tickerData, setTickerData] = useState<Ticker[]>([])
   const setSelectedSymbol = useAssetStore((state) => state.setSelectedSymbol);
@@ -257,7 +260,7 @@ catch (err) {
             variant={side === "sell" ? "destructive" : "outline"}
             aria-pressed={side === "sell"}
             onClick={() => setSide("sell")}
-            className={side === "sell" ? "h-10" : "h-10 border-red-600/40 text-red-400"}
+            className={side === "sell" ? "h-10" : "h-10  border-red-600/40 text-red-400 hover:bg-red-700"}
           >
             Sell
           </Button>
@@ -265,7 +268,7 @@ catch (err) {
             type="button"
             aria-pressed={side === "buy"}
             onClick={() => setSide("buy")}
-            className={side === "buy" ? "h-10 bg-emerald-600 text-white hover:bg-emerald-700" : "h-10"}
+            className={side === "buy" ? "h-10 bg-green-600 text-white hover:bg-green-700" : "h-10"}
             variant={side === "buy" ? "default" : "outline"}
             >
             Buy
@@ -299,7 +302,7 @@ catch (err) {
 
          </span>
           </div>
-<Slider defaultValue={[0]} min={1} max={20} step={1}  value={[leverage]} onValueChange={(vals:number[])=> setLeverage(vals[0])} />
+<Slider defaultValue={[0]} min={1} max={100} step={1}  value={[leverage]} onValueChange={(vals:number[])=> setLeverage(vals[0])} />
 
         </div>
 
