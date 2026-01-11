@@ -7,7 +7,7 @@ import { apiFetch } from "@/lib/api-client"
 import AuthStatus from "../auth/auth-status"
 import { Bell, Settings, Wallet2 } from "lucide-react"
 import { Button } from "../ui/button"
-import { useAssetStore, useTradeStore } from "@/store/useStore"
+import { useAssetStore, useSessionState, useTradeStore } from "@/store/useStore"
 import { getToken, onAuthChange } from "@/lib/auth"
 
 type BalanceResponse = {
@@ -36,16 +36,20 @@ export default function Navbar() {
   const [token, setToken] = useState<string | null>(null)
   useEffect(() => {
     setToken(getToken())
+
     const off = onAuthChange(() => setToken(getToken()))
     return () => off()
   }, [])
 
   const loggedIn = !!token
 
-  const { data, isLoading } = useSWR<BalanceResponse | null>("balance", fetchBalance, {
-    refreshInterval: 3000,
-    revalidateOnFocus: false,
-  })
+  const { data, isLoading } = useSWR<BalanceResponse | null>(
+    token ? "balance" : null,
+    fetchBalance,
+    {
+       refreshInterval: 3000,
+       revalidateOnFocus: false,
+     })
 
   const [authed, setAuthed] = useState(false)
 

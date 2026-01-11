@@ -142,7 +142,7 @@ export default function Chart({ duration, startTime }: Props) {
       setIsLoading(true);
       try {
         const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_BASE_URL}/candles/market?symbol=${selectedSymbol}&interval=${duration}&startTime=${startTime}`,
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/candles/market?symbol=${selectedSymbol}&interval=${duration}&startTime=${startTime}`,
           {
             headers: {
               "Content-Type": "application/json",

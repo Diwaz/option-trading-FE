@@ -33,6 +33,20 @@ type AssetState = {
   fetchOrders:()=>void;
   loading: boolean;
 }
+type SessionState = {
+  isLoggedin: boolean,
+  setLogin:()=> void;
+  removeSession:()=>void;
+}
+export const useSessionState = create<SessionState>((set)=>({
+  isLoggedin: false,
+  setLogin:()=>set({
+    isLoggedin: true,
+  }),    
+  removeSession:()=>set({
+    isLoggedin: false,
+  })
+}));
 
 export const useAssetStore = create<AssetState>((set) => ({
   selectedSymbol: "SOL_USDC",

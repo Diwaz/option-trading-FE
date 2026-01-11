@@ -3,7 +3,7 @@
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { Card, CardContent } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { useAssetStore, useTradeStore } from "@/store/useStore"
+import { useAssetStore, useSessionState, useTradeStore } from "@/store/useStore"
 
 import { Button } from "../ui/button"
 import { apiRequest } from "@/lib/api-client"
@@ -17,7 +17,7 @@ import {  CloseTradeBody, CloseTradeResponse, DBClosedOrderSchema } from "@/type
 const fmt = (v: number) => v.toLocaleString(undefined, { maximumFractionDigits: 2 })
 
 export default function OrderHistory() {
-
+  const isLoggedin = useSessionState((state)=>state.isLoggedin);
   const openTrades = useTradeStore((state)=>state.openTrades);
   const fetchTrades = useTradeStore((state)=>state.fetchOrders);
  const closedTrades = useTradeStore((state)=>state.closedTrades); 
@@ -28,8 +28,9 @@ export default function OrderHistory() {
     // console.log("open Orders",openTrades)
 
   useEffect(()=>{
+    if (!isLoggedin) return ;
     fetchTrades();
-  },[fetchTrades])
+  },[fetchTrades,isLoggedin])
 
   const calculatePnl = (openPrice:string,leverage:number,margin:number,asset:string,type:string): number =>{
       // PnL = cp - sp

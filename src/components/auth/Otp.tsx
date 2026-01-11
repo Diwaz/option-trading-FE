@@ -23,6 +23,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { setToken } from "@/lib/auth";
 import { apiRequest } from "@/lib/api-client";
+import { useSessionState } from "@/store/useStore";
 
 export function Otp({
   email,
@@ -38,7 +39,7 @@ export function Otp({
     const parsed = stored !== null ? parseInt(stored, 10) : 0;
     return isNaN(parsed) ? 0 : parsed;
   });
-
+  const setLogin = useSessionState((state)=> state.setLogin);
 const BACKEND_URL = process.env.NEXT_PUBLIC_API_BASE_URL
   const form = useForm<{ otp: string }>({
     resolver: zodResolver(
@@ -122,7 +123,9 @@ const BACKEND_URL = process.env.NEXT_PUBLIC_API_BASE_URL
 
       if (response.status === 200) {
         setToken(data.token);
+        setLogin();
         // localStorage.setItem("token", data.token);
+
         try {
             await apiRequest('/trade/onRamp',"POST",{
                 email,

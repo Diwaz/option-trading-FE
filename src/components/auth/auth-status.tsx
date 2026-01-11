@@ -3,14 +3,17 @@
 
 import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
-import { CheckCircle2, LogOut, LogOutIcon } from "lucide-react"
-import { clearToken, getToken, onAuthChange } from "@/lib/auth"
+import {  LogOut, LogOutIcon } from "lucide-react"
+import {  clearToken, getToken, onAuthChange } from "@/lib/auth"
 import { useRouter } from "next/navigation"
+import { useSessionState } from "@/store/useStore"
+
 // Shows a "logged in" logo when authenticated and a "logout" logo when not logged in.
 // Clicking when logged out opens the popup form.
 export default function AuthStatus() {
   const router = useRouter();
   const [token, setToken] = useState<string | null>(null)
+  const resetLogin = useSessionState((state)=>state.removeSession);
   useEffect(() => {
     setToken(getToken())
     const off = onAuthChange(() => setToken(getToken()))
@@ -23,7 +26,10 @@ export default function AuthStatus() {
     <>
       <div className=" ">
         {loggedIn ? (
-          <div className="inline-flex items-center gap-2 rounded-md bg-emerald-900/40 border border-emerald-700 px-2.5 py-1.5 text-emerald-200" onClick={()=>clearToken()}>
+          <div className="inline-flex items-center gap-2 rounded-md bg-emerald-900/40 border border-emerald-700 px-2.5 py-1.5 text-emerald-200" onClick={()=>{
+            resetLogin()
+            clearToken();
+          }}>
             <LogOutIcon className=" h-3"  aria-label="Logged in" />
             <Button
               size="sm"
