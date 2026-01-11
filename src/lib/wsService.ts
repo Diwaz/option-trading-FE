@@ -6,7 +6,7 @@ export function useMarketDataWS() {
   const updatePrice = useAssetStore((s) => s.updatePrice);
 
   useEffect(() => {
-    const ws = new WebSocket("ws://localhost:8080");
+    const ws = new WebSocket(`${process.env.NEXT_PUBLIC_WS_URL}`);
     ws.onmessage = (e) => {
       const data = JSON.parse(e.data);
       updatePrice(data.symbol , {ask:data.ask,bid:data.bid});

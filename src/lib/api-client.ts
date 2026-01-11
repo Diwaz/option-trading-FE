@@ -20,7 +20,7 @@ export async function apiFetch(input: RequestInfo | URL, init?: RequestInit) {
   return resp
 }
 // api-client.ts
-const API_BASE_URL = "http://localhost:8848/api/v1"
+// const API_BASE_URL = "http://localhost:8848/api/v1"
 
 type HttpMethod = "GET" | "POST" | "PUT" | "DELETE"
 
@@ -33,7 +33,7 @@ export async function apiRequest<TResponse,TBody = unknown>(
     // 👇 Load auth token from localStorage
     const token = localStorage.getItem("auth_token")
 
-    const res = await fetch(`${API_BASE_URL}${endpoint}`, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}${endpoint}`, {
       method,
       headers: {
         "Content-Type": "application/json",

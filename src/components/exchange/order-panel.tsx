@@ -127,7 +127,7 @@ console.error("Order Request Failed", err);
   const assetChange = findChange(selectedSymbol ?? "SOL_USDC");
 
   useEffect(() => {
-    const ws = new WebSocket("ws://localhost:8080")
+    const ws = new WebSocket(`${process.env.NEXT_PUBLIC_WS_URL}`)
 
     ws.onmessage = (event) => {
       try {

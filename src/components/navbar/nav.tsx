@@ -19,7 +19,7 @@ type BalanceResponse = {
 
 const fetchBalance = async (): Promise<BalanceResponse | null> => {
   try {
-    const res = await apiFetch("http://localhost:8848/api/v1/trade/balance", {
+    const res = await apiFetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/trade/balance`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
     })

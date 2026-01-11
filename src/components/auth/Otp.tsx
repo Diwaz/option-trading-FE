@@ -39,7 +39,7 @@ export function Otp({
     return isNaN(parsed) ? 0 : parsed;
   });
 
-const BACKEND_URL = 'http://localhost:8848/api/v1'
+const BACKEND_URL = process.env.NEXT_PUBLIC_API_BASE_URL
   const form = useForm<{ otp: string }>({
     resolver: zodResolver(
       z.object({

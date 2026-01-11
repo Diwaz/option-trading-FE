@@ -17,7 +17,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 
-const BACKEND_URL = 'http://localhost:8848/api/v1'
+const BACKEND_URL = process.env.NEXT_PUBLIC_API_BASE_URL
 
 export function Email({
   setEmail,
