@@ -8,9 +8,10 @@ import { useAssetStore, useSessionState, useTradeStore } from "@/store/useStore"
 import { Button } from "../ui/button"
 import { apiRequest } from "@/lib/api-client"
 import { toast } from "sonner"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { RefreshCcw } from "lucide-react"
 import {  CloseTradeBody, CloseTradeResponse, DBClosedOrderSchema } from "@/types/type"
+import { Spinner } from "../ui/spinner"
 
 
 
@@ -25,11 +26,22 @@ export default function OrderHistory() {
   const removeTrade = useTradeStore((state)=>state.removeTrade);
   const prices = useAssetStore((state)=>state.livePrices) 
 
+  const [closeLoading,setCloseLoading] = useState(false);
+  const [reloadLoading, setReloadLoading] = useState(false);
+
     // console.log("open Orders",openTrades)
 
   useEffect(()=>{
     if (!isLoggedin) return ;
-    fetchTrades();
+    try {
+      setReloadLoading(true);
+      fetchTrades();
+    }catch(err){
+      setReloadLoading(false);
+      console.log("eror received:",err)
+    }finally{
+      setReloadLoading(false)
+    }
   },[fetchTrades,isLoggedin])
 
   const calculatePnl = (openPrice:string,leverage:number,margin:number,asset:string,type:string): number =>{
@@ -59,15 +71,18 @@ export default function OrderHistory() {
   }
   const handleCloseOrder = async (id: string) => {
     try {
+      setCloseLoading(true);
         const res = await apiRequest<CloseTradeResponse,CloseTradeBody>('/trade/close','POST',{
             orderId: id
         })
 
         console.log("Close order response:", res);
+        setCloseLoading(false);
         toast(res.message)
         
         removeTrade(id);
     } catch (err) {
+      setCloseLoading(false);
       console.error("Close order failed:", err)
       toast("Error while closing order")
     }
@@ -89,11 +104,30 @@ export default function OrderHistory() {
               Closed Trades
             </TabsTrigger>
           </TabsList>
-          <div className="cursor-pointer" onClick={()=>{
-              fetchTrades();
+          <Button  className=" bg-background dark:bg-neutral-900  cursor-pointer" disabled={reloadLoading} onClick={async()=>{
+
+            setReloadLoading(true);
+               try {
+        await fetchTrades();
+    }catch(err){
+      setReloadLoading(false);
+      console.log("eror received:",err)
+    }finally{
+      setReloadLoading(false)
+    }
           }}>
-            <RefreshCcw className="hover:text-gray-500"/> 
-            </div> 
+            {
+              reloadLoading ? (
+                <>
+                <Spinner className="text-white"/>
+                </>
+              ) : (
+                
+                <RefreshCcw className=" text-white"/> 
+              )
+
+            }
+            </Button> 
           </div>
           <TabsContent value="open" className="m-0">
             <div className="overflow-scroll h-[360px]">
@@ -147,7 +181,8 @@ export default function OrderHistory() {
                           </>                       
                       </TableCell>
                       <TableCell className="">
-                        <Button size="sm" variant="ghost" className="text-[#CB3B3D] border-[#3E1F2A] border  flex items-center justify-center m-2 rounded-sm" onClick={()=>{handleCloseOrder(o.orderId)}}>
+                        <Button size="sm" variant="ghost" 
+                        className="text-[#CB3B3D] border-[#3E1F2A] border  flex items-center justify-center m-2 rounded-sm" onClick={()=>{handleCloseOrder(o.orderId)}}>
                           Close
                           {/* <TicketX/> */}
                         </Button>

@@ -23,12 +23,15 @@ import { ArrowDownRight } from "lucide-react"
 import { ASSET_LIST, getAssetLogo } from "@/constant/asset"
 import Image from "next/image"
 import { Asset, TradeBody, TradeResponse } from "@/types/type"
+import { Spinner } from "../ui/spinner"
 
 type OrderResponse ={
   orderId: string
 }  
 export default function OrderPanel() {
 const [volume, setVolume] = useState("0.50")
+
+const [createLoading,setCreateLoading] = useState(false);
 
 const [side, setSide] = useState<"buy" | "sell">("buy")
 // const leverageStops = [1, 5, 10, 20, 100] as const
@@ -60,6 +63,7 @@ const mid = useMemo(() => {
   const sendOrder = async (): Promise<OrderResponse | null> => {
     console.log("Sending order to server:", { symbol: selectedSymbol, margin, leverage, type:side });
     try {
+      setCreateLoading(true);
       const res = await apiRequest<TradeResponse,TradeBody>("/trade/create", "POST",
       {
             asset: selectedSymbol ?? "ETH_USDC",
@@ -71,7 +75,7 @@ const mid = useMemo(() => {
       )
   
       const data = (await res) as OrderResponse
-      console.log("Received order response:", data);
+      // console.log("Received order response:", data);
         addTrade({
           orderId: data.orderId,
           asset: selectedSymbol ?? " ",
@@ -81,12 +85,14 @@ const mid = useMemo(() => {
           type: side,
           openingPrice: (price?.ask)?.toString() ?? " "
         })
+        setCreateLoading(false);
         console.log("Order response:", data)
         toast("Order Placed Successfully")
         return data
   
       }
 catch (err) {
+  setCreateLoading(false);
 console.error("Order Request Failed", err);
         const message =
           err instanceof Error
@@ -318,11 +324,18 @@ console.error("Order Request Failed", err);
                 <Button
                   type="button"
                   className={`w-full h-10 ${confirmClasses}`}
-                  disabled={!side || !Number.isFinite(notional) || lots <= 0}
+                  
+                  disabled={!side || !Number.isFinite(notional) || lots <= 0 || createLoading}
                   // onClick placeholder - wire to your submit action
                   onClick={sendOrder}
                 >
-                  {confirmLabel}
+
+                  {createLoading ? (
+                    <>
+                    <Spinner/> {" Placing Order"}
+                    </>
+                  )
+                  : confirmLabel}
                 </Button>
 
               </div>
