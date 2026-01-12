@@ -201,7 +201,7 @@ export default function Chart({ duration, startTime }: Props) {
   }, [duration, chartReady, selectedSymbol, startTime]);
 
   return (
-    <div className="w-full h-[400px] lg:h-[600px] relative flex align-center max-h-[600px]">
+    <div className="w-full h-[400px] sm:h-[600px] relative flex align-center max-h-[600px]">
       <div className="w-full h-full" ref={ref} />
       {isLoading && (
         <div className="absolute inset-0 bg-black/20 backdrop-blur-sm flex items-center justify-center z-10">
