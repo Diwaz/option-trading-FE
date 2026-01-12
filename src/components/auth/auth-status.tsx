@@ -34,7 +34,7 @@ export default function AuthStatus() {
             <Button
               size="sm"
               variant="ghost"
-              className="h-5 text-emerald-100 hover:text-emerald-50 hover:bg-emerald-800/50 hidden sm:block"
+              className="h-5 text-white dark:text-emerald-100 hover:text-emerald-50 hover:bg-emerald-800/50 hidden sm:block"
             >
               Logout
             </Button>
@@ -42,7 +42,7 @@ export default function AuthStatus() {
         ) : (
           <Button
             variant="secondary"
-            className="bg-zinc-800 hover:bg-zinc-700 border border-zinc-700"
+            className="text-black dark:text-white  bg-zomc-700 dark:bg-zinc-800  hover:bg-zinc-700 border dark:border-zinc-700"
             onClick={() => {
               router.push('/auth/login')
             }}

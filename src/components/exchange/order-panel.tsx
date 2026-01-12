@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import type { Ticker } from "@/components/exchange/ticker-list"
-import { useAssetStore, useTradeStore } from "@/store/useStore";
+import { useAssetStore, useSessionState, useTradeStore } from "@/store/useStore";
 import { apiRequest } from "@/lib/api-client"
 import { toast } from "sonner"
 import {
@@ -24,11 +24,15 @@ import { ASSET_LIST, getAssetLogo } from "@/constant/asset"
 import Image from "next/image"
 import { Asset, TradeBody, TradeResponse } from "@/types/type"
 import { Spinner } from "../ui/spinner"
+import { useRouter } from "next/navigation"
+import { getToken, onAuthChange, setToken } from "@/lib/auth"
 
 type OrderResponse ={
   orderId: string
 }  
 export default function OrderPanel() {
+
+  const [token, setToken] = useState<string | null>(null)
 const [volume, setVolume] = useState("0.50")
 
 const [createLoading,setCreateLoading] = useState(false);
@@ -39,7 +43,7 @@ const [leverage, setLeverage] = useState(1)
 // const [leverageSlider, setleverageSlider] = useState(0)
 const selectedSymbol = useAssetStore((state) => state.selectedSymbol)
 const addTrade = useTradeStore((state) => state.addTrade)
-
+const router = useRouter();
 // const livePrices = useAssetStore((state) => state.livePrices)
 
 
@@ -191,7 +195,13 @@ console.error("Order Request Failed", err);
     }
   }, [])
 
+  useEffect(() => {
+    setToken(getToken())
+    const off = onAuthChange(() => setToken(getToken()))
+    return () => off()
+  }, [])
 
+  const loggedIn = !!token
   return (
     <Card className="h-full rounded-none border-0">
       <CardHeader className="px-3">
@@ -327,9 +337,15 @@ console.error("Order Request Failed", err);
                   
                   disabled={!side || !Number.isFinite(notional) || lots <= 0 || createLoading}
                   // onClick placeholder - wire to your submit action
-                  onClick={sendOrder}
+                  onClick={()=>{
+                    if (loggedIn){
+                      
+                      sendOrder();
+                    }else{
+                      router.push('/auth/login')
+                    }
+                  }}
                 >
-
                   {createLoading ? (
                     <>
                     <Spinner/> {" Placing Order"}
