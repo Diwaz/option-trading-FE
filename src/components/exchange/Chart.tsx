@@ -38,14 +38,14 @@ export default function Chart({ duration, startTime }: Props) {
   const seriesRef = useRef<ISeriesApi<"Candlestick"> | null>(null);
   const [chartReady, setChartReady] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [height, setHeight] = useState<number>(600)
+  const [height, setHeight] = useState<number>(700)
 
   const selectedSymbol = useAssetStore((state) => state.selectedSymbol);
 
   useEffect(() => {
     if (!ref.current) return;
 
-    const newHeight = window.innerHeight < 600 ? 400 : 600;
+    const newHeight = window.innerHeight < 600 ? 400 : 800;
     setHeight(newHeight);
     const chart = createChart(ref.current, {
       layout: { background: { color: "#171717" }, textColor: "#94a3b8" },

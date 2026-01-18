@@ -202,7 +202,7 @@ export default function OrderHistory() {
           </TabsContent>
 
           <TabsContent value="closed" className="m-0">
-            <div className="overflow-scroll h-[360px]">
+            <div className="overflow-y-auto h-[360px] no-scrollbar hide-scrollbar ">
               <Table>
                 <TableHeader>
                   <TableRow className="hover:bg-transparent">

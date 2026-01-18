@@ -4,6 +4,7 @@ import { useMemo, useState } from "react"
 import Chart from "@/components/exchange/Chart"
 import OrderPanel from "@/components/exchange/order-panel"
 import OrderHistory from "@/components/exchange/order-history"
+import Chat from "@/components/exchange/Chat" 
 
 const timeIntervals = [
   { label: "1m", value: "1m" },
@@ -32,18 +33,25 @@ export default function Page() {
   }, [selectedRange]);
 
   return (
-    <main className="mx-auto w-full h-screen flex flex-col">
-      <div className="grid grid-cols-1  lg:grid-cols-[minmax(0,1fr)_400px]">
-        <section aria-label="Chart" className=" border-r bg-card text-card-foreground">
+    <main className="mx-auto w-full h-screen flex flex-col overflow-hidden">
+      <div className="grid  lg:grid-cols-[400px_minmax(0,1fr)_400px] flex-1 min-h-0 gap-0">
+        
+        {/* Chat Component */}
+        <section aria-label="Chat" className="border-r bg-card text-card-foreground min-h-0">
+          <Chat />
+        </section>
+
+        {/* Chart Component */}
+        <section aria-label="Chart" className="border-r bg-card text-card-foreground min-h-0">
           <div className="p-2 border-b">
             <div className="flex justify-between">
-              <div className="flex">
+              <div className="flex ">
                 {timeIntervals.map((interval) => (
                   <button
                     key={interval.value}
                     onClick={() => setSelectedInterval(interval.value)}
                     className={`
-                      px-3 py-1 text-sm font-medium transition-colors
+                      px-3 py-1 rounded text-sm font-medium transition-colors
                       ${selectedInterval === interval.value
                         ? 'bg-primary text-primary-foreground'
                         : 'bg-secondary hover:bg-secondary/80 text-secondary-foreground'
@@ -60,9 +68,9 @@ export default function Page() {
                     key={range.value}
                     onClick={() => setSelectedRange(range.value)}
                     className={`
-                      px-3 py-1  text-sm font-medium transition-colors
+                      px-3 py-1 rounded text-sm font-medium transition-colors
                       ${selectedRange === range.value
-                        ? 'bg-primary text-primary-foreground '
+                        ? 'bg-primary text-primary-foreground'
                         : 'bg-secondary hover:bg-secondary/80 text-secondary-foreground'
                       }
                     `}
@@ -73,16 +81,21 @@ export default function Page() {
               </div>
             </div>
           </div>
-          <Chart duration={selectedInterval} startTime={startTime} />
+          <div className="h-full min-h-0">
+            <Chart duration={selectedInterval} startTime={startTime} />
+          </div>
         </section>
 
-        <section aria-label="Order panel" className="bg-card text-card-foreground">
+        {/* Order Panel */}
+        <section aria-label="Order panel" className="border-r bg-card text-card-foreground min-h-0">
           <OrderPanel />
         </section>
       </div>
-        <div className="h-full w-full">
-          <OrderHistory />
-        </div>
+
+      {/* Row 2: Order History */}
+      <div className="w-full h-[360px] flex-none border-t overflow-hidden">
+        <OrderHistory />
+      </div>
     </main>
   )
 }
