@@ -12,6 +12,7 @@ import { useEffect, useState } from "react"
 import { RefreshCcw } from "lucide-react"
 import {  CloseTradeBody, CloseTradeResponse, DBClosedOrderSchema } from "@/types/type"
 import { Spinner } from "../ui/spinner"
+import { ScrollArea } from "../ui/scroll-area"
 
 
 
@@ -129,8 +130,8 @@ export default function OrderHistory() {
             }
             </Button> 
           </div>
+            <ScrollArea className="h-70">
           <TabsContent value="open" className="m-0">
-            <div className="overflow-scroll h-[360px]">
               <Table>
                 <TableHeader>
                   <TableRow className="hover:bg-transparent">
@@ -198,7 +199,6 @@ export default function OrderHistory() {
                   )}
                 </TableBody>
               </Table>
-            </div>
           </TabsContent>
 
           <TabsContent value="closed" className="m-0">
@@ -270,6 +270,8 @@ export default function OrderHistory() {
               </Table>
             </div>
           </TabsContent>
+
+            </ScrollArea>
         </Tabs>
       </CardContent>
     </Card>

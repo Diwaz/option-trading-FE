@@ -218,7 +218,7 @@ console.error("Order Request Failed", err);
 
             {selectedSymbol}
             </div>
-            <div className={`flex gap-2 items-end text-2xl ${assetChange ===  "up" ? "text-green-500" : assetChange === "down" ?  "text-red-500" : "text-white"} `}>
+            <div className={`flex gap-2 items-end lg:text-2xl xl:text-lg 2xl:text-2xl ${assetChange ===  "up" ? "text-green-500" : assetChange === "down" ?  "text-red-500" : "text-white"} `}>
               {price?.bid}
             <ArrowDownRight width={15} height={20} color="gray" />
             </div>

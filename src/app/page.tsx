@@ -5,6 +5,7 @@ import Chart from "@/components/exchange/Chart"
 import OrderPanel from "@/components/exchange/order-panel"
 import OrderHistory from "@/components/exchange/order-history"
 import Chat from "@/components/exchange/Chat" 
+import { CandlestickChart } from "lucide-react";
 
 const timeIntervals = [
   { label: "1m", value: "1m" },
@@ -32,17 +33,21 @@ export default function Page() {
     return Math.floor((now - selectedRange) / 1000);
   }, [selectedRange]);
 
+  //  floating chat on mobile
+  const [showMobileChat, setShowMobileChat] = useState(false);
+
   return (
-    <main className="mx-auto w-full h-screen flex flex-col overflow-hidden">
-      <div className="grid  lg:grid-cols-[400px_minmax(0,1fr)_400px] flex-1 min-h-0 gap-0">
-        
-        {/* Chat Component */}
-        <section aria-label="Chat" className="border-r bg-card text-card-foreground min-h-0">
+    <main className="mx-auto w-full flex flex-1 flex-col overflow-hidden">
+      <div className="grid grid-cols-1 lg:grid-cols-[400px_minmax(0,1fr)_400px] flex-1 min-h-0 gap-0">
+        {/* Chat: hidden on small screens, visible on lg+ */}
+        <section
+          aria-label="Chat"
+          className="border-r bg-card text-card-foreground min-h-0 lg:flex flex-col h-full max-h-[80vh] hidden"
+        >
           <Chat />
         </section>
-
-        {/* Chart Component */}
-        <section aria-label="Chart" className="border-r bg-card text-card-foreground min-h-0">
+        {/* Chart */}
+        <section aria-label="Chart" className="border-r bg-card text-card-foreground flex flex-col min-h-0">
           <div className="p-2 border-b">
             <div className="flex justify-between">
               <div className="flex ">
@@ -81,21 +86,46 @@ export default function Page() {
               </div>
             </div>
           </div>
-          <div className="h-full min-h-0">
+          <div className="flex-1 min-h-0">
             <Chart duration={selectedInterval} startTime={startTime} />
           </div>
         </section>
-
         {/* Order Panel */}
-        <section aria-label="Order panel" className="border-r bg-card text-card-foreground min-h-0">
+        <section aria-label="Order panel" className="border-r bg-card text-card-foreground flex flex-col min-h-0">
           <OrderPanel />
         </section>
       </div>
-
-      {/* Row 2: Order History */}
-      <div className="w-full h-[360px] flex-none border-t overflow-hidden">
+      {/* Order History */}
+      <div className="w-full h-100 border-t">
         <OrderHistory />
       </div>
+      {/* Floating Chat Button for mobile */}
+      <button
+        className="fixed lg:hidden bottom-6 right-6 z-50 bg-green-700 hover:bg-green-800 text-white rounded-full p-4 shadow-lg flex items-center"
+        onClick={() => setShowMobileChat(true)}
+        aria-label="Open AI Chat"
+      >
+        <CandlestickChart className="w-7 h-7" />
+      </button>
+      {/* Mobile Chat Modal/Drawer */}
+      {showMobileChat && (
+        <div className="fixed inset-0 z-50 flex items-end lg:hidden bg-black/40">
+          <div className="w-full bg-card rounded-t-lg shadow-lg h-[80vh] flex flex-col">
+            <div className="flex justify-end p-2">
+              <button
+                className="text-gray-500 hover:text-gray-700"
+                onClick={() => setShowMobileChat(false)}
+                aria-label="Close chat"
+              >
+                <span className="text-2xl">&times;</span>
+              </button>
+            </div>
+            <div className="flex-1 min-h-0">
+              <Chat />
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   )
 }

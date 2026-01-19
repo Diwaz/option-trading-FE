@@ -374,15 +374,15 @@ const price = useAssetStore((state) =>  selectedSymbol ? state.livePrices[select
   }
 
   return (
-    <Card className="h-full rounded-none border-0 bg-card text-card-foreground flex flex-col items-center justify-center">
+    <Card className="h-full max-h-[650px] lg:max-h-[650px] w-full rounded-none border-0 bg-card text-card-foreground flex flex-col items-center justify-center">
       {!showChat ? (
         <div className="flex flex-col items-center justify-center h-full w-full gap-6">
           <div className="flex flex-col items-center gap-2">
             <CandlestickChart className="w-16 h-16 text-green-700" />
-            <CardTitle className="text-lg font-semibold text-center">
+            <CardTitle className=" font-semibold text-center text-sm">
               AI Strategy Generator
             </CardTitle>
-            <p className="text-sm text-muted-foreground text-center max-w-xs">
+            <p className="text-xs text-muted-foreground text-center max-w-xs">
               Let our AI help you create automated trading strategies for BTC, ETH,
               SOL and more.
             </p>
@@ -397,7 +397,10 @@ const price = useAssetStore((state) =>  selectedSymbol ? state.livePrices[select
               <Spinner className="text-gray" />
             </div>
           )}
+          <p className="text-xs">
+
             Generate Strategy with AI
+          </p>
           </Button>
 
         </div>
@@ -412,9 +415,9 @@ const price = useAssetStore((state) =>  selectedSymbol ? state.livePrices[select
               <CardTitle className="text-sm font-semibold">Flux-bot</CardTitle>
             </div>
           </CardHeader>
-          <CardContent className="flex-1 p-0 flex flex-col min-h-0 overflow-hidden w-full">
+          <CardContent className="flex-1 p-0 flex flex-col min-h-0 w-full">
             {/* Messages Area */}
-            <div className="flex-1 p-4 overflow-y-scroll">
+            <div className="flex-1 p-4 overflow-y-auto h-[400px] min-h-0">
               <div className="space-y-4">
                 {messages.map((message) => (
                   <div
