@@ -111,6 +111,28 @@
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
 }
+/* for firefox */
+.scrollbar {
+  /* scrollbar-width:10px; */
+  scrollbar-width: thin;
+  scrollbar-color: black transparent;
+  
+}
+
+
+/* for chromium */
+.scrollbar::-webkit-scrollbar {
+  width: 10px;
+}
+
+.scrollbar::-webkit-scrollbar-track { 
+  background: red;
+}
+
+.scrollbar::-webkit-scrollbar-thumb { 
+  background:red;
+}
+
 
 @layer base {
   * {

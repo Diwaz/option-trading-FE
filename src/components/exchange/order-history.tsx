@@ -32,7 +32,7 @@ export default function OrderHistory() {
     // console.log("open Orders",openTrades)
 
   useEffect(()=>{
-    if (!isLoggedin) return ;
+    // if (!isLoggedin) return ;
     try {
       setReloadLoading(true);
       fetchTrades();
@@ -42,7 +42,9 @@ export default function OrderHistory() {
     }finally{
       setReloadLoading(false)
     }
-  },[fetchTrades,isLoggedin])
+  },[isLoggedin])
+
+
 
   const calculatePnl = (openPrice:string,leverage:number,margin:number,asset:string,type:string): number =>{
       // PnL = cp - sp
@@ -130,7 +132,7 @@ export default function OrderHistory() {
             </Button> 
           </div>
           <TabsContent value="open" className="m-0">
-            <div className="overflow-scroll h-[360px]">
+            <div className="overflow-scroll h-[360px] scrollbar">
               <Table>
                 <TableHeader>
                   <TableRow className="hover:bg-transparent">
