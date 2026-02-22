@@ -3,7 +3,7 @@
 import useSWR from "swr"
 import Link from "next/link"
 import {  useEffect, useMemo, useState } from "react"
-import { apiFetch } from "@/lib/api-client"
+import {  apiRequest } from "@/lib/api-client"
 import AuthStatus from "../auth/auth-status"
 import { Bell, Settings, Wallet2 } from "lucide-react"
 import { Button } from "../ui/button"
@@ -17,20 +17,16 @@ type BalanceResponse = {
 //   [key: string]: unknown
 }
 
-const fetchBalance = async (): Promise<BalanceResponse | null> => {
+const fetchBalance = async ():Promise<BalanceResponse | null> => {
   try {
-    const res = await apiFetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/trade/balance`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-    })
-    const data = (await res.json()) as BalanceResponse
-    return data
-  } catch {
-    // graceful fallback – show em dash when balance cannot be fetched
-    return null
+    const res = await apiRequest<BalanceResponse>('/trade/balance',"POST");
+    return res
+  }catch(e){
+    console.log("Error while fetching balance");
+
+  return null
   }
 }
-
 export default function Navbar() {
 
   const [token, setToken] = useState<string | null>(null)
